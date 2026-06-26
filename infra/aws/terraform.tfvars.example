@@ -1,0 +1,16 @@
+aws_region   = "us-east-1"
+environment  = "prod"
+
+# Generate with: openssl rand -base64 48
+db_password  = "CHANGE_ME"
+jwt_secret   = "CHANGE_ME_AT_LEAST_32_CHARS_LONG"
+
+# After first `terraform apply`, fill this in with the ECR URL from outputs
+backend_image = "123456789.dkr.ecr.us-east-1.amazonaws.com/rooz-backend:latest"
+
+# Your custom domain (leave empty to use CloudFront default domain)
+dashboard_domain = "app.rooz.school"
+
+# ACM certificate ARN — must be in us-east-1 for CloudFront
+# Create in AWS Console → Certificate Manager → us-east-1
+acm_certificate_arn = "arn:aws:acm:us-east-1:123456789:certificate/CHANGE_ME"

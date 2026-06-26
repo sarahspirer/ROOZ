@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  ADMIN
+  PARENT
+}
+
+enum Tier {
+  BRONZE
+  SILVER
+  GOLD
+  ELITE
+}
+
+enum ViolationLevel {
+  WARNING
+  RESTRICTION
+  ADMIN_FLAG
+  ESCALATION
+}
+
+enum ComplianceStatus {
+  COMPLIANT
+  NON_COMPLIANT
+  OFFLINE
+  BYPASSING
+}
+
+enum EventType {
+  HEARTBEAT
+  VIOLATION
+  BYPASS_ATTEMPT
+  LOCK
+  UNLOCK
+  REWARD_EARNED
+  TIER_CHANGE
+  SCORE_UPDATE
+  PARENT_ALERT
+}
+
+model School {
+  id             String   @id @default(cuid())
+  name           String
+  address        String?
+  lat            Float?
+  lng            Float?
+  geofenceRadius Int      @default(200)
+  timezone       String   @default("America/New_York")
+  createdAt      DateTime @default(now())
+
+  users   User[]
+  classes Class[]
+  rewards Reward[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  createdAt DateTime @default(now())
+
+  student Student?
+  teacher Teacher?
+  parent  Parent?
+  admin   Admin?
+}
+
+model Student {
+  id              String           @id @default(cuid())
+  userId          String           @unique
+  user            User             @relation(fields: [userId], references: [id])
+  grade           String
+  focusScore      Int              @default(0)
+  dailyScore      Int              @default(0)
+  weeklyScore     Int              @default(0)
+  tier            Tier             @default(BRONZE)
+  streak          Int              @default(0)
+  totalViolations Int              @default(0)
+  status          ComplianceStatus @default(COMPLIANT)
+  lastSeen        DateTime         @default(now())
+
+  devices          Device[]
+  violations       Violation[]
+  events           ComplianceEvent[]
+  rewards          StudentReward[]
+  classEnrollments ClassEnrollment[]
+  parents          ParentStudent[]
+}
+
+model Teacher {
+  id      String  @id @default(cuid())
+  userId  String  @unique
+  user    User    @relation(fields: [userId], references: [id])
+  classes Class[]
+}
+
+model Admin {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Parent {
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+  user               User            @relation(fields: [userId], references: [id])
+  children           ParentStudent[]
+  extendRestrictions Boolean         @default(false)
+}
+
+model ParentStudent {
+  parentId  String
+  studentId String
+  parent    Parent  @relation(fields: [parentId], references: [id])
+  student   Student @relation(fields: [studentId], references: [id])
+
+  @@id([parentId, studentId])
+}
+
+model Device {
+  id            String   @id @default(cuid())
+  studentId     String
+  student       Student  @relation(fields: [studentId], references: [id])
+  platform      String
+  deviceId      String   @unique
+  isJailbroken  Boolean  @default(false)
+  lastHeartbeat DateTime @default(now())
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}
+
+model Class {
+  id        String   @id @default(cuid())
+  name      String
+  room      String?
+  grade     String?
+  building  String?
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  teacherId String?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  schedule  Json?
+  createdAt DateTime @default(now())
+
+  sessions    Session[]
+  enrollments ClassEnrollment[]
+}
+
+model ClassEnrollment {
+  classId   String
+  studentId String
+  class     Class   @relation(fields: [classId], references: [id])
+  student   Student @relation(fields: [studentId], references: [id])
+
+  @@id([classId, studentId])
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  classId     String
+  class       Class     @relation(fields: [classId], references: [id])
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  lockedBy    String?
+  isLocked    Boolean   @default(false)
+  allowedApps String[]
+
+  events ComplianceEvent[]
+}
+
+model ComplianceEvent {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  sessionId String?
+  session   Session? @relation(fields: [sessionId], references: [id])
+  type      EventType
+  payload   Json?
+  timestamp DateTime @default(now())
+
+  @@index([studentId, timestamp])
+  @@index([sessionId])
+}
+
+model Violation {
+  id           String         @id @default(cuid())
+  studentId    String
+  student      Student        @relation(fields: [studentId], references: [id])
+  level        ViolationLevel
+  description  String
+  appAttempted String?
+  scoreImpact  Int
+  timestamp    DateTime       @default(now())
+  resolved     Boolean        @default(false)
+  resolvedAt   DateTime?
+
+  @@index([studentId, timestamp])
+}
+
+model Reward {
+  id            String  @id @default(cuid())
+  schoolId      String
+  school        School  @relation(fields: [schoolId], references: [id])
+  name          String
+  description   String
+  requiredTier  Tier    @default(BRONZE)
+  requiredScore Int     @default(0)
+  isActive      Boolean @default(true)
+
+  claims StudentReward[]
+}
+
+enum RewardStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+model StudentReward {
+  id         String       @id @default(cuid())
+  studentId  String
+  rewardId   String
+  student    Student      @relation(fields: [studentId], references: [id])
+  reward     Reward       @relation(fields: [rewardId], references: [id])
+  claimedAt  DateTime     @default(now())
+  status     RewardStatus @default(PENDING)
+  reviewedBy String?
+  reviewedAt DateTime?
+  note       String?
+}

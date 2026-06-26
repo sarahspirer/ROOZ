@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "ROOZ",
+    "slug": "rooz",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#080808"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.rooz.app",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#080808"
+      },
+      "package": "com.rooz.app"
+    },
+    "plugins": [
+      "expo-location",
+      [
+        "expo-background-fetch",
+        {
+          "minimumInterval": 60
+        }
+      ]
+    ],
+    "scheme": "rooz",
+    "extra": {
+      "apiUrl": "http://192.168.1.191:3001",
+      "socketUrl": "http://192.168.1.191:3001"
+    }
+  }
+}

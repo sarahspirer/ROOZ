@@ -12,14 +12,14 @@ ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build
 
-# ── Stage 2: serve with nginx ─────────────────────────────────────────────────
-FROM nginx:alpine AS runner
+# ── Stage 2: serve ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-RUN apk add --no-cache gettext
+RUN npm install -g serve
 
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf.template
+COPY --from=builder /app/dist ./dist
 
-EXPOSE 80
+EXPOSE 3000
 
-CMD ["/bin/sh", "-c", "envsubst '$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["serve", "-s", "dist", "-l", "3000"]

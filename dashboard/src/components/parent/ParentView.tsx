@@ -29,7 +29,7 @@ export function ParentView() {
 
   useEffect(() => {
     const token = localStorage.getItem('rooz_token');
-    fetch(`/api/parents/me/children`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/parents/me/children`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())

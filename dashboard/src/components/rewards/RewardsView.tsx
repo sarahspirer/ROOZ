@@ -31,14 +31,14 @@ export function RewardsView() {
   const token = () => localStorage.getItem('rooz_token') ?? '';
 
   const loadRewards = useCallback(async () => {
-    const r = await fetch('/api/rewards', { headers: { Authorization: `Bearer ${token()}` } });
+    const r = await fetch(`${import.meta.env.VITE_API_URL}/api/rewards`, { headers: { Authorization: `Bearer ${token()}` } });
     const d = await r.json();
     setRewards(d.rewards ?? []);
   }, []);
 
   const loadClaims = useCallback(async (status: string) => {
     setLoading(true);
-    const r = await fetch(`/api/rewards/claims?status=${status}`, {
+    const r = await fetch(`${import.meta.env.VITE_API_URL}/api/rewards/claims?status=${status}`, {
       headers: { Authorization: `Bearer ${token()}` },
     });
     const d = await r.json();
@@ -54,7 +54,7 @@ export function RewardsView() {
   const review = async (claimId: string, action: 'approve' | 'deny', note?: string) => {
     setActing(claimId);
     try {
-      await fetch(`/api/rewards/claims/${claimId}/${action}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/rewards/claims/${claimId}/${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
         body: JSON.stringify({ note }),

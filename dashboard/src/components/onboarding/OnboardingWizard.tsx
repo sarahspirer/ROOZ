@@ -173,7 +173,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
     setImporting(true);
     try {
       const token = localStorage.getItem('rooz_token');
-      const r = await fetch('/api/onboarding/import-students', {
+      const r = await fetch(`${import.meta.env.VITE_API_URL}/api/onboarding/import-students`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ students: rows }),
@@ -190,7 +190,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
     setImporting(true);
     try {
       const token = localStorage.getItem('rooz_token');
-      const r = await fetch('/api/onboarding/import-teachers', {
+      const r = await fetch(`${import.meta.env.VITE_API_URL}/api/onboarding/import-teachers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ teachers: rows }),

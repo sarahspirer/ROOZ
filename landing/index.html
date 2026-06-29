@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ROOZ — School Phone Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: #222222;
+      --orange: #f97316;
+      --orange-dark: #ea6c0a;
+      --white: #ffffff;
+      --muted: #888888;
+      --text: #e5e5e5;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2rem;
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav img { height: 28px; }
+    nav a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: color 0.2s;
+    }
+    nav a:hover { color: var(--white); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-cta {
+      background: var(--orange); color: var(--white) !important;
+      padding: 0.55rem 1.25rem; border-radius: 8px; font-weight: 600;
+      font-size: 0.875rem;
+    }
+    .nav-cta:hover { background: var(--orange-dark) !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.3);
+      color: var(--orange); padding: 0.4rem 1rem; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: 2rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900; line-height: 1.1; color: var(--white);
+      max-width: 800px; margin-bottom: 1.5rem;
+    }
+    .hero h1 span { color: var(--orange); }
+    .hero p {
+      font-size: 1.2rem; color: var(--muted); max-width: 560px;
+      margin-bottom: 2.5rem; line-height: 1.7;
+    }
+    .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--orange); color: var(--white);
+      padding: 0.9rem 2rem; border-radius: 10px; font-weight: 700;
+      font-size: 1rem; text-decoration: none; transition: all 0.2s;
+      border: none; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent; color: var(--white);
+      padding: 0.9rem 2rem; border-radius: 10px; font-weight: 600;
+      font-size: 1rem; text-decoration: none; transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: #444; background: #111; }
+
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4rem; justify-content: center;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 800; color: var(--white); }
+    .stat-num span { color: var(--orange); }
+    .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* SECTION BASE */
+    section { padding: 6rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--orange); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+      font-weight: 800; color: var(--white); line-height: 1.2; margin-bottom: 1rem;
+    }
+    .section-sub { font-size: 1.05rem; color: var(--muted); max-width: 540px; line-height: 1.7; }
+
+    /* PROBLEM */
+    .problem { background: var(--surface); }
+    .problem-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .problem-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.75rem;
+    }
+    .problem-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .problem-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .problem-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+    /* HOW IT WORKS */
+    .steps { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 3rem; }
+    .step {
+      display: flex; gap: 1.5rem; align-items: flex-start;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.75rem;
+    }
+    .step-num {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.3);
+      color: var(--orange); font-weight: 800; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.35rem; }
+    .step p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+    /* FEATURES */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.75rem;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: rgba(249,115,22,0.4); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(249,115,22,0.12); display: flex; align-items: center;
+      justify-content: center; font-size: 1.3rem; margin-bottom: 1rem;
+    }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+
+    /* PRICING */
+    .pricing { background: var(--surface); }
+    .pricing-cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem; margin-top: 3rem; max-width: 900px; margin-left: auto; margin-right: auto;
+    }
+    .pricing-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+    }
+    .pricing-card.featured {
+      border-color: var(--orange);
+      background: linear-gradient(135deg, rgba(249,115,22,0.06) 0%, var(--bg) 100%);
+    }
+    .pricing-badge {
+      display: inline-block; background: var(--orange); color: var(--white);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+    .pricing-name { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .pricing-price { font-size: 2.5rem; font-weight: 900; color: var(--white); margin-bottom: 0.25rem; }
+    .pricing-price span { font-size: 1rem; font-weight: 500; color: var(--muted); }
+    .pricing-desc { font-size: 0.875rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.75rem; }
+    .pricing-features li { font-size: 0.875rem; color: var(--text); display: flex; gap: 0.5rem; align-items: flex-start; }
+    .pricing-features li::before { content: '✓'; color: var(--orange); font-weight: 700; flex-shrink: 0; }
+
+    /* TESTIMONIALS */
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .testimonial {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.75rem;
+    }
+    .testimonial-quote { font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 1.25rem; font-style: italic; }
+    .testimonial-author { font-size: 0.85rem; font-weight: 600; color: var(--white); }
+    .testimonial-role { font-size: 0.8rem; color: var(--muted); }
+
+    /* CTA SECTION */
+    .cta-section {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(249,115,22,0.08) 0%, transparent 60%);
+      border-top: 1px solid var(--border);
+    }
+    .cta-section h2 { font-size: clamp(1.8rem, 3.5vw, 2.75rem); font-weight: 800; color: var(--white); margin-bottom: 1rem; }
+    .cta-section p { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; }
+    .cta-note { font-size: 0.8rem; color: var(--muted); margin-top: 1rem; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    footer img { height: 22px; opacity: 0.7; }
+    footer p { font-size: 0.8rem; color: var(--muted); }
+    footer a { color: var(--muted); text-decoration: none; font-size: 0.8rem; }
+    footer a:hover { color: var(--white); }
+    .footer-links { display: flex; gap: 1.5rem; }
+
+    /* CONTACT FORM */
+    .contact { background: var(--surface); }
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: start; margin-top: 3rem;
+    }
+    @media (max-width: 700px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-info h3 { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .contact-info p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 2rem; }
+    .contact-point { display: flex; gap: 0.75rem; margin-bottom: 1rem; align-items: flex-start; }
+    .contact-point-icon { font-size: 1.1rem; }
+    .contact-point-text strong { display: block; font-size: 0.875rem; color: var(--white); }
+    .contact-point-text span { font-size: 0.8rem; color: var(--muted); }
+    form { display: flex; flex-direction: column; gap: 1rem; }
+    input, textarea, select {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      color: var(--white); font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; width: 100%; outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--orange); }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    textarea { height: 120px; resize: vertical; }
+    select option { background: var(--bg); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <img src="public/logo_myrooz.png" alt="myROOZ" />
+  <div class="nav-links">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-cta">Start Free Pilot</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🏫 Built for Schools</div>
+  <h1>Phones in pockets.<br /><span>Kids in class.</span></h1>
+  <p>ROOZ gives administrators real-time visibility into phone compliance across every classroom — no hardware, no IT setup, no disruption.</p>
+  <div class="hero-buttons">
+    <a href="#contact" class="btn-primary">Start Your Free Pilot</a>
+    <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">38<span>+</span></div>
+      <div class="stat-label">States with Phone Laws</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">72<span>%</span></div>
+      <div class="stat-label">Teachers Report Distraction</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">&lt;1<span>wk</span></div>
+      <div class="stat-label">To Go Live</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">$0</div>
+      <div class="stat-label">Hardware Required</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="section-label">The Challenge</div>
+    <h2 class="section-title">Phone policies exist.<br />Enforcement doesn't.</h2>
+    <p class="section-sub">Most schools have rules. Few have tools. ROOZ bridges the gap between policy and practice.</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">📵</div>
+        <h3>Policies Without Teeth</h3>
+        <p>Students know the rule but face no real-time accountability. Teachers spend more time policing phones than teaching.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">📊</div>
+        <h3>No Visibility for Admin</h3>
+        <p>Principals and superintendents have no way to see compliance data across classrooms without walking every hallway.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">⚖️</div>
+        <h3>Growing Legal Liability</h3>
+        <p>38 states now mandate phone-free schools. Without documentation, districts face real risk of non-compliance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Up and running in days,<br />not months.</h2>
+    <p class="section-sub">No hardware. No IT project. No training days. ROOZ is software that works the moment students log in.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>Import Your School</h3>
+          <p>Upload a CSV of your students and teachers. ROOZ sets up your dashboard in minutes — classes, schedules, and all.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>Students Download the App</h3>
+          <p>Students install ROOZ on their phones and log in with their school email. The app runs quietly in the background during class hours.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>Teachers See It Live</h3>
+          <p>Every teacher gets a real-time dashboard showing who's compliant, who's on their phone, and who's gone offline.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <h3>Admin Gets the Full Picture</h3>
+          <p>School-wide compliance rates, violation trends, and classroom-level reports — all in one place for administrators.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="background: var(--surface);">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need.<br />Nothing you don't.</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📡</div>
+        <h3>Real-Time Compliance Dashboard</h3>
+        <p>See every student's status live — compliant, distracted, offline, or bypassing — across every class in your school.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚨</div>
+        <h3>Instant Alerts</h3>
+        <p>Get notified the moment a student tries to bypass the system. Escalations go straight to the right staff member.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <h3>Rewards & Incentives</h3>
+        <p>Students earn focus scores and unlock rewards for consistent compliance. Positive reinforcement that actually works.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Violation Tracking</h3>
+        <p>Every violation is logged with timestamp, class, and context. Perfect for parent meetings and disciplinary records.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Compliance Reports</h3>
+        <p>Weekly and monthly reports for administrators. Show your school board exactly how phone-free your campus is.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👨‍👩‍👧</div>
+        <h3>Parent Portal</h3>
+        <p>Parents see their child's focus score and any violations in real time. Keeps families informed and accountable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container" style="text-align: center;">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">No setup fees. No hardware.<br />Cancel anytime.</h2>
+    <p class="section-sub" style="margin: 0 auto 0;">Simple per-student pricing that scales with your school.</p>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <div class="pricing-name">Pilot</div>
+        <div class="pricing-price">$0<span> / month</span></div>
+        <div class="pricing-desc">30-day free pilot for your school. No credit card required.</div>
+        <ul class="pricing-features">
+          <li>Up to 500 students</li>
+          <li>Full admin dashboard</li>
+          <li>Real-time compliance tracking</li>
+          <li>Teacher & parent apps</li>
+          <li>Onboarding support</li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="display: block; text-align: center;">Start Free Pilot</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-name">School</div>
+        <div class="pricing-price">$3<span> / student / mo</span></div>
+        <div class="pricing-desc">Everything in Pilot, plus full compliance reporting and priority support.</div>
+        <ul class="pricing-features">
+          <li>Unlimited students</li>
+          <li>Violation tracking & reports</li>
+          <li>Rewards & incentives system</li>
+          <li>Parent portal</li>
+          <li>Monthly compliance reports</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="display: block; text-align: center;">Get a Quote</a>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-name">District</div>
+        <div class="pricing-price" style="font-size: 1.8rem;">Custom</div>
+        <div class="pricing-desc">Multi-school deployment with district-wide analytics and dedicated support.</div>
+        <ul class="pricing-features">
+          <li>Multiple schools</li>
+          <li>District-level dashboard</li>
+          <li>Custom integrations</li>
+          <li>SIS sync</li>
+          <li>Dedicated account manager</li>
+          <li>Annual compliance reporting</li>
+        </ul>
+        <a href="#contact" class="btn-secondary" style="display: block; text-align: center;">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="section-label">Get Started</div>
+    <h2 class="section-title">Start your free pilot today.</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>What's included in the pilot</h3>
+        <p>30 days, your real school data, full feature access. We'll have you live within a week.</p>
+        <div class="contact-point">
+          <div class="contact-point-icon">✅</div>
+          <div class="contact-point-text">
+            <strong>Free 30-day pilot</strong>
+            <span>No credit card. No commitment.</span>
+          </div>
+        </div>
+        <div class="contact-point">
+          <div class="contact-point-icon">⚡</div>
+          <div class="contact-point-text">
+            <strong>Live in under a week</strong>
+            <span>We handle onboarding and setup.</span>
+          </div>
+        </div>
+        <div class="contact-point">
+          <div class="contact-point-icon">📞</div>
+          <div class="contact-point-text">
+            <strong>Dedicated support</strong>
+            <span>Real person, real help, real fast.</span>
+          </div>
+        </div>
+        <div class="contact-point">
+          <div class="contact-point-icon">📊</div>
+          <div class="contact-point-text">
+            <strong>Pilot report</strong>
+            <span>We'll show you the compliance data at the end of your 30 days.</span>
+          </div>
+        </div>
+      </div>
+      <form onsubmit="handleSubmit(event)">
+        <input type="text" name="name" placeholder="Your name" required />
+        <input type="email" name="email" placeholder="School email address" required />
+        <input type="text" name="school" placeholder="School or district name" required />
+        <select name="size">
+          <option value="" disabled selected>School size</option>
+          <option>Under 500 students</option>
+          <option>500–1,000 students</option>
+          <option>1,000–2,500 students</option>
+          <option>2,500+ students (district)</option>
+        </select>
+        <textarea name="message" placeholder="Anything else we should know? (optional)"></textarea>
+        <button type="submit" class="btn-primary" id="submit-btn">Request My Free Pilot →</button>
+        <p id="form-success" style="color: #22c55e; font-size: 0.875rem; display: none;">
+          ✓ Got it! We'll be in touch within 1 business day.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+  <div class="container">
+    <h2>The mandate is here.<br />The solution is ready.</h2>
+    <p>Join the schools using ROOZ to build phone-free learning environments that last.</p>
+    <a href="#contact" class="btn-primary">Start Your Free Pilot</a>
+    <p class="cta-note">No hardware. No IT project. No long-term contract.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <img src="public/logo_myrooz.png" alt="myROOZ" />
+  <p>© 2026 ROOZ. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="mailto:hello@myrooz.com">hello@myrooz.com</a>
+    <a href="#contact">Privacy</a>
+    <a href="#contact">Terms</a>
+  </div>
+</footer>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const success = document.getElementById('form-success');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.style.display = 'none';
+    success.style.display = 'block';
+  }, 800);
+}
+</script>
+
+</body>
+</html>

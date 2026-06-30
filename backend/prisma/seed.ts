@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding PHOCUS demo data...');
+  console.log('Seeding ROOZ demo data...');
 
   // School
   const school = await prisma.school.upsert({
@@ -24,10 +24,10 @@ async function main() {
   // Admin user
   const adminHash = await bcrypt.hash('password', 10);
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@phocus.school' },
+    where: { email: 'admin@rooz.school' },
     update: {},
     create: {
-      email: 'admin@phocus.school',
+      email: 'admin@rooz.school',
       name: 'Principal Rivera',
       role: UserRole.ADMIN,
       schoolId: school.id,
@@ -41,10 +41,10 @@ async function main() {
 
   // Teachers
   const teachers = await Promise.all([
-    { name: 'Ms. Carter', email: 'carter@phocus.school' },
-    { name: 'Mr. Thompson', email: 'thompson@phocus.school' },
-    { name: 'Ms. Williams', email: 'williams@phocus.school' },
-    { name: 'Mr. Davis', email: 'davis@phocus.school' },
+    { name: 'Ms. Carter', email: 'carter@rooz.school' },
+    { name: 'Mr. Thompson', email: 'thompson@rooz.school' },
+    { name: 'Ms. Williams', email: 'williams@rooz.school' },
+    { name: 'Mr. Davis', email: 'davis@rooz.school' },
   ].map(async (t) => {
     const user = await prisma.user.upsert({
       where: { email: t.email },
@@ -99,7 +99,7 @@ async function main() {
   const statuses: ComplianceStatus[] = ['COMPLIANT', 'COMPLIANT', 'COMPLIANT', 'NON_COMPLIANT', 'OFFLINE'];
 
   const students = await Promise.all(studentNames.map(async ([name, grade], i) => {
-    const email = `${name.toLowerCase().replace(' ', '.')}@student.phocus.school`;
+    const email = `${name.toLowerCase().replace(' ', '.')}@student.rooz.school`;
     const focusScore = Math.floor(Math.random() * 3500);
     const tier = focusScore >= 3000 ? 'ELITE' : focusScore >= 1500 ? 'GOLD' : focusScore >= 500 ? 'SILVER' : 'BRONZE';
     const status = statuses[Math.floor(Math.random() * statuses.length)];
@@ -221,7 +221,7 @@ async function main() {
   console.log(`  Classes: ${classes.length}`);
   console.log(`  Students: ${students.length}`);
   console.log(`  Parents: ${parentData.length}`);
-  console.log('\nLogin: admin@phocus.school / password');
+  console.log('\nLogin: admin@rooz.school / password');
   console.log('Parent: parent.johnson@demo.rooz.school / password');
 }
 

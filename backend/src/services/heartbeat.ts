@@ -4,33 +4,98 @@ import { eventBus } from '../events/eventBus';
 import { log } from '../middleware/logger';
 
 const OFFLINE_CHECK_INTERVAL = 30_000; // run sweep every 30s
+const EARTH_RADIUS_M = 6_371_000;
 
-let sweepInterval: ReturnType<typeof setInterval> | null = null;
+function distanceMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return EARTH_RADIUS_M * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 export async function processHeartbeat(
   deviceId: string,
   studentId: string,
-  meta: { platform: string; batteryLevel?: number; isJailbroken?: boolean },
+  meta: { platform: string; batteryLevel?: number; isJailbroken?: boolean; lat?: number; lng?: number },
 ): Promise<void> {
   const now = new Date();
+
+  const student = await prisma.student.findUnique({
+    where: { id: studentId },
+    select: { status: true, user: { select: { name: true, schoolId: true } } },
+  });
+  if (!student) return;
+
+  let isInsideGeofence = true;
+  let distance: number | null = null;
+
+  if (meta.lat != null && meta.lng != null) {
+    const school = await prisma.school.findUnique({
+      where: { id: student.user.schoolId },
+      select: { lat: true, lng: true, geofenceRadius: true },
+    });
+    if (school?.lat != null && school?.lng != null) {
+      distance = distanceMeters(meta.lat, meta.lng, school.lat, school.lng);
+      isInsideGeofence = distance <= school.geofenceRadius;
+    }
+  }
+
+  const newStatus = isInsideGeofence ? 'COMPLIANT' : 'NON_COMPLIANT';
+  const wasInsideGeofence = student.status !== 'NON_COMPLIANT' || student.status === 'OFFLINE';
 
   await Promise.all([
     prisma.device.update({
       where: { deviceId },
-      data: { lastHeartbeat: now, isJailbroken: meta.isJailbroken ?? false },
+      data: {
+        lastHeartbeat: now,
+        isJailbroken: meta.isJailbroken ?? false,
+        ...(meta.lat != null && meta.lng != null ? { lastLat: meta.lat, lastLng: meta.lng } : {}),
+      },
     }),
     prisma.student.update({
       where: { id: studentId },
-      data: { lastSeen: now, status: 'COMPLIANT' },
+      data: { lastSeen: now, status: newStatus },
     }),
     prisma.complianceEvent.create({
       data: {
         studentId,
         type: 'HEARTBEAT',
-        payload: meta,
+        payload: { ...meta, distanceFromSchool: distance },
       },
     }),
   ]);
+
+  // Only fire a violation + alert on the transition into off-campus, not every heartbeat
+  if (!isInsideGeofence && wasInsideGeofence) {
+    await prisma.violation.create({
+      data: {
+        studentId,
+        level: 'ESCALATION',
+        description: 'Left school geofence',
+        scoreImpact: -25,
+        timestamp: now,
+      },
+    });
+
+    eventBus.emit('student:violation', {
+      studentId,
+      description: 'Left school geofence',
+      level: 'ESCALATION',
+    });
+
+    eventBus.emit('activity:logged', {
+      id: `geofence-${studentId}-${Date.now()}`,
+      studentId,
+      studentName: student.user.name,
+      type: 'VIOLATION',
+      description: 'Left school geofence',
+      severity: 'critical',
+      timestamp: now.toISOString(),
+    });
+  }
 
   eventBus.emit('student:score:updated', {
     studentId,
@@ -39,7 +104,7 @@ export async function processHeartbeat(
     weeklyScore: 0,
     tier: 'BRONZE',
     streak: 0,
-    status: 'COMPLIANT',
+    status: newStatus,
     timestamp: now.toISOString(),
   });
 }

@@ -64,10 +64,19 @@ export async function getStudentById(studentId: string): Promise<StudentData> {
   return data.student;
 }
 
-export async function sendHeartbeat(studentId: string, deviceId: string): Promise<void> {
+export async function sendHeartbeat(
+  studentId: string,
+  deviceId: string,
+  location?: { lat: number; lng: number },
+): Promise<void> {
   await request('/api/compliance/heartbeat', {
     method: 'POST',
-    body: JSON.stringify({ studentId, deviceId, platform: 'ios' }),
+    body: JSON.stringify({
+      studentId,
+      deviceId,
+      platform: 'ios',
+      ...(location ? { lat: location.lat, lng: location.lng } : {}),
+    }),
   });
 }
 

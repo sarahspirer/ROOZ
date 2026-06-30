@@ -5,6 +5,7 @@ import {
   ScrollView, Animated, Vibration,
 } from 'react-native';
 import { io, Socket } from 'socket.io-client';
+import * as Location from 'expo-location';
 import { login, getStudentById, sendHeartbeat, setToken, StudentData, getRewards, claimReward, RewardData, API_URL } from './services/api';
 import { FocusScoreRing } from './components/FocusScoreRing';
 
@@ -73,7 +74,19 @@ function ClassModeScreen({ user, student }: { user: any; student: StudentData })
   const deviceId = useRef(`device-${user.id}`).current;
   const isCompliant = data.status === 'COMPLIANT';
   const tierColor = TIER_COLORS[data.tier] ?? C.orange;
-  const beat = useCallback(async () => { try { await sendHeartbeat(data.id, deviceId); } catch {} }, [data.id]);
+  const beat = useCallback(async () => {
+    try {
+      let location: { lat: number; lng: number } | undefined;
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+          location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        }
+      } catch {}
+      await sendHeartbeat(data.id, deviceId, location);
+    } catch {}
+  }, [data.id]);
   useEffect(() => { beat(); const t = setInterval(beat, 30000); return () => clearInterval(t); }, [beat]);
   useEffect(() => {
     const t = setInterval(async () => { try { const u = await getStudentById(user.studentId); setData(u); } catch {} }, 10000);

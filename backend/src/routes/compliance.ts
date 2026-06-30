@@ -8,7 +8,7 @@ const router = Router();
 
 // POST /api/heartbeat — device heartbeat (unauthenticated by device token)
 router.post('/heartbeat', async (req: Request, res: Response): Promise<void> => {
-  const { deviceId, studentId, platform, batteryLevel, isJailbroken } = req.body;
+  const { deviceId, studentId, platform, batteryLevel, isJailbroken, lat, lng } = req.body;
 
   if (!deviceId || !studentId) {
     res.status(400).json({ error: 'deviceId and studentId are required' });
@@ -16,7 +16,7 @@ router.post('/heartbeat', async (req: Request, res: Response): Promise<void> => 
   }
 
   try {
-    await processHeartbeat(deviceId, studentId, { platform, batteryLevel, isJailbroken });
+    await processHeartbeat(deviceId, studentId, { platform, batteryLevel, isJailbroken, lat, lng });
     res.json({ ok: true, timestamp: new Date().toISOString() });
   } catch (err) {
     res.status(500).json({ error: 'Failed to record heartbeat' });

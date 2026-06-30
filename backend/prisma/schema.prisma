@@ -137,6 +137,8 @@ model Device {
   deviceId      String   @unique
   isJailbroken  Boolean  @default(false)
   lastHeartbeat DateTime @default(now())
+  lastLat       Float?
+  lastLng       Float?
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
 }

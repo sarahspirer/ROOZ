@@ -6,6 +6,8 @@ import { log } from '../middleware/logger';
 const OFFLINE_CHECK_INTERVAL = 30_000; // run sweep every 30s
 const EARTH_RADIUS_M = 6_371_000;
 
+let sweepInterval: ReturnType<typeof setInterval> | null = null;
+
 function distanceMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
@@ -44,7 +46,7 @@ export async function processHeartbeat(
   }
 
   const newStatus = isInsideGeofence ? 'COMPLIANT' : 'NON_COMPLIANT';
-  const wasInsideGeofence = student.status !== 'NON_COMPLIANT' || student.status === 'OFFLINE';
+  const wasInsideGeofence = student.status !== 'NON_COMPLIANT';
 
   await Promise.all([
     prisma.device.update({

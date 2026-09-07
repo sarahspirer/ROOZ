@@ -139,8 +139,9 @@ model Device {
   lastHeartbeat DateTime @default(now())
   lastLat       Float?
   lastLng       Float?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
+  isActive        Boolean  @default(true)
+  expoPushToken   String?
+  createdAt       DateTime @default(now())
 }
 
 model Class {

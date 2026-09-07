@@ -34,8 +34,32 @@ function MetricCard({
   );
 }
 
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+
 export function ReportsView() {
   const [metrics, setMetrics] = useState<OverviewMetrics | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const token = localStorage.getItem('rooz_token');
+      const res = await fetch(`${API_URL}/api/reports/compliance-export`, {
+        headers: { Authorization: `Bearer ${token ?? ''}` },
+      });
+      const data = await res.json();
+
+      // Build a clean text report and download as JSON
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rooz-compliance-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch { alert('Export failed'); }
+    finally { setExporting(false); }
+  };
 
   useEffect(() => {
     Promise.all([
@@ -70,6 +94,17 @@ export function ReportsView() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-white font-bold text-lg">Compliance Reports</h2>
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border border-brand-500/40 bg-brand-600/10 text-brand-400 hover:bg-brand-600/20 transition-all disabled:opacity-50"
+        >
+          {exporting ? '…' : '⬇'} Export Report
+        </button>
+      </div>
+
       {/* Overview cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <MetricCard

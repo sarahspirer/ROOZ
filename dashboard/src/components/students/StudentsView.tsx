@@ -18,11 +18,48 @@ const STATUS_DOT: Record<ComplianceStatus, string> = {
   BYPASSING: 'bg-compliance-red',
 };
 
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+
 export function StudentsView() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showImport, setShowImport] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<{ created: number; skipped: number; errors: string[] } | null>(null);
+
+  const handleImport = async () => {
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const lines = importText.trim().split('\n').filter(Boolean);
+      const rows = lines.map((line) => {
+        const [name, email, grade, password] = line.split(',').map((s) => s.trim());
+        return { name, email, grade, password };
+      }).filter((r) => r.name && r.email && r.grade);
+
+      const token = localStorage.getItem('rooz_token');
+      const res = await fetch(`${API_URL}/api/students/import`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token ?? ''}` },
+        body: JSON.stringify({ rows }),
+      });
+      const data = await res.json();
+      setImportResult(data);
+      if (data.created > 0) {
+        // Refresh list
+        const updated = await studentsApi.list();
+        setStudents(updated.data.students.map((s: any) => ({
+          id: s.id, userId: s.userId, name: s.user.name, email: s.user.email, grade: s.grade,
+          focusScore: s.focusScore, dailyScore: s.dailyScore, weeklyScore: s.weeklyScore,
+          tier: s.tier, streak: s.streak, totalViolations: s._count.violations, status: s.status, lastSeen: s.lastSeen,
+        })));
+      }
+    } catch { setImportResult({ created: 0, skipped: 0, errors: ['Import failed'] }); }
+    finally { setImporting(false); }
+  };
 
   useEffect(() => {
     studentsApi
@@ -65,7 +102,43 @@ export function StudentsView() {
           className="bg-surface-card border border-surface-border rounded-lg px-4 py-2 text-sm text-white placeholder-surface-muted focus:outline-none focus:border-brand-500 w-64"
         />
         <div className="text-sm text-surface-muted">{students.length} students</div>
+        <button
+          onClick={() => setShowImport(true)}
+          className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-brand-500/40 bg-brand-600/10 text-brand-400 hover:bg-brand-600/20 transition-all"
+        >
+          ⬆ Import CSV
+        </button>
       </div>
+
+      {/* CSV Import Modal */}
+      {showImport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
+            <h2 className="text-white font-bold text-lg mb-1">Import Students</h2>
+            <p className="text-surface-muted text-xs mb-4">One student per line: <code className="bg-surface px-1 rounded text-brand-400">Name, email@school.edu, Grade, password</code> (password optional, defaults to "password")</p>
+            <textarea
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+              placeholder={"Emma Johnson, emma@student.rooz.school, 10\nJake Smith, jake@student.rooz.school, 11, mypassword"}
+              rows={8}
+              className="w-full bg-surface border border-surface-border rounded-lg px-3 py-2.5 text-white text-xs font-mono placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none mb-4"
+            />
+            {importResult && (
+              <div className="mb-4 p-3 rounded-lg bg-surface border border-surface-border text-xs space-y-1">
+                <div className="text-compliance-green">✓ Created: {importResult.created}</div>
+                <div className="text-surface-muted">↷ Skipped (already exist): {importResult.skipped}</div>
+                {importResult.errors.map((e, i) => <div key={i} className="text-compliance-red">✕ {e}</div>)}
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button onClick={() => { setShowImport(false); setImportResult(null); setImportText(''); }} className="flex-1 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-white transition-colors text-sm font-medium">Close</button>
+              <button onClick={handleImport} disabled={importing || !importText.trim()} className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors disabled:opacity-50">
+                {importing ? 'Importing…' : 'Import'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="bg-surface-card border border-surface-border rounded-xl overflow-hidden">
         <table className="w-full">

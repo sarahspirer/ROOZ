@@ -99,3 +99,10 @@ export async function claimReward(rewardId: string, studentId: string): Promise<
     body: JSON.stringify({ studentId }),
   });
 }
+
+export async function registerPushToken(studentId: string, deviceId: string, token: string): Promise<void> {
+  await request(`/api/students/${studentId}/push-token`, {
+    method: 'POST',
+    body: JSON.stringify({ token, deviceId }),
+  });
+}

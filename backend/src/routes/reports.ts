@@ -127,4 +127,80 @@ router.get('/class-heatmap', async (req: Request, res: Response): Promise<void> 
   res.json({ heatmap });
 });
 
+// GET /api/reports/compliance-export — downloadable compliance report (JSON for now, PDF via dashboard)
+router.get('/compliance-export', async (req: Request, res: Response): Promise<void> => {
+  const { schoolId } = req.user!;
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+  const [school, students, violations] = await Promise.all([
+    prisma.school.findUnique({ where: { id: schoolId }, select: { name: true } }),
+    prisma.student.findMany({
+      where: { user: { schoolId } },
+      select: {
+        id: true,
+        focusScore: true,
+        dailyScore: true,
+        weeklyScore: true,
+        tier: true,
+        streak: true,
+        totalViolations: true,
+        status: true,
+        grade: true,
+        user: { select: { name: true, email: true } },
+        _count: { select: { violations: true } },
+      },
+      orderBy: { focusScore: 'desc' },
+    }),
+    prisma.violation.findMany({
+      where: { timestamp: { gte: since }, student: { user: { schoolId } } },
+      select: {
+        level: true,
+        description: true,
+        timestamp: true,
+        scoreImpact: true,
+        student: { select: { user: { select: { name: true } } } },
+      },
+      orderBy: { timestamp: 'desc' },
+      take: 500,
+    }),
+  ]);
+
+  const totalStudents = students.length;
+  const compliantNow = students.filter((s) => s.status === 'COMPLIANT').length;
+  const avgFocusScore = totalStudents > 0
+    ? Math.round(students.reduce((s, st) => s + st.focusScore, 0) / totalStudents)
+    : 0;
+
+  res.json({
+    generatedAt: new Date().toISOString(),
+    school: school?.name ?? 'Unknown School',
+    period: { from: since.toISOString(), to: new Date().toISOString() },
+    summary: {
+      totalStudents,
+      compliantNow,
+      complianceRate: totalStudents > 0 ? Math.round((compliantNow / totalStudents) * 100) : 0,
+      avgFocusScore,
+      totalViolations: violations.length,
+    },
+    students: students.map((s) => ({
+      name: s.user.name,
+      email: s.user.email,
+      grade: s.grade,
+      tier: s.tier,
+      focusScore: s.focusScore,
+      weeklyScore: s.weeklyScore,
+      streak: s.streak,
+      violations: s._count.violations,
+      status: s.status,
+    })),
+    recentViolations: violations.slice(0, 100).map((v) => ({
+      student: v.student.user.name,
+      level: v.level,
+      description: v.description,
+      scoreImpact: v.scoreImpact,
+      timestamp: v.timestamp,
+    })),
+  });
+});
+
 export default router;

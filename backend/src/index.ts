@@ -24,6 +24,7 @@ import simulatorRouter from './routes/simulator';
 import pushRouter from './routes/push';
 import parentsRouter from './routes/parents';
 import onboardingRouter from './routes/onboarding';
+import emergencyRouter from './routes/emergency';
 import { sendPushToAll } from './services/pushNotifications';
 import { eventBus } from './events/eventBus';
 
@@ -70,6 +71,7 @@ app.use('/api/simulator', simulatorRouter);
 app.use('/api/push', pushRouter);
 app.use('/api/parents', parentsRouter);
 app.use('/api/onboarding', onboardingRouter);
+app.use('/api/emergency', emergencyRouter);
 
 // 404 handler
 app.use((_req, res) => {

@@ -67,6 +67,8 @@ export interface ServerToClientEvents {
   'session:lock': (data: LockUnlockPayload) => void;
   'session:unlock': (data: LockUnlockPayload) => void;
   'student:violation': (data: { studentId: string; description: string; level: string; app?: string }) => void;
+  'emergency:unlock': (data: { schoolId: string; timestamp: string }) => void;
+  'announcement': (data: { schoolId: string; title: string; body: string; timestamp: string }) => void;
 }
 
 export interface ClientToServerEvents {

@@ -6,8 +6,24 @@ import {
 } from 'react-native';
 import { io, Socket } from 'socket.io-client';
 import * as Location from 'expo-location';
-import { login, getStudentById, sendHeartbeat, setToken, StudentData, getRewards, claimReward, RewardData, API_URL } from './services/api';
+import * as Notifications from 'expo-notifications';
+import { login, getStudentById, sendHeartbeat, setToken, StudentData, getRewards, claimReward, RewardData, API_URL, registerPushToken } from './services/api';
 import { FocusScoreRing } from './components/FocusScoreRing';
+
+// Screen Time blocking — only active after Apple approves the family-controls entitlement
+// Until then these are no-ops so the app still builds and runs normally
+let screenTimeLock: ((apps: string[]) => Promise<void>) | null = null;
+let screenTimeUnlock: (() => Promise<void>) | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const ST = require('./modules/screen-time');
+  screenTimeLock = ST.lockStudentDevice;
+  screenTimeUnlock = ST.unlockStudentDevice;
+} catch { /* not yet available */ }
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: true, shouldSetBadge: false }),
+});
 
 const C = {
   bg: '#ffffff', card: '#f5f5f7', border: '#e5e5ea', muted: '#6e6e73', text: '#1d1d1f',
@@ -87,6 +103,19 @@ function ClassModeScreen({ user, student }: { user: any; student: StudentData })
       await sendHeartbeat(data.id, deviceId, location);
     } catch {}
   }, [data.id]);
+  // Register Expo push token once on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status === 'granted') {
+          const tokenData = await Notifications.getExpoPushTokenAsync();
+          await registerPushToken(data.id, deviceId, tokenData.data);
+        }
+      } catch { /* push optional */ }
+    })();
+  }, []);
+
   useEffect(() => { beat(); const t = setInterval(beat, 30000); return () => clearInterval(t); }, [beat]);
   useEffect(() => {
     const t = setInterval(async () => { try { const u = await getStudentById(user.studentId); setData(u); } catch {} }, 10000);
@@ -117,17 +146,32 @@ function ClassModeScreen({ user, student }: { user: any; student: StudentData })
       Vibration.vibrate([0, 200, 100, 200]);
       showToast(event.description, event.level);
     });
-    socket.on('class:status', (event: { classId: string; className: string; isLocked: boolean }) => {
+    socket.on('class:status', (event: { classId: string; className: string; isLocked: boolean; allowedApps?: string[] }) => {
       const enrolled = (student.classEnrollments ?? []).some((e) => e.class.id === event.classId);
       if (!enrolled) return;
       if (event.isLocked) {
         setLockedClass({ className: event.className });
         Vibration.vibrate([0, 300, 150, 300, 150, 300]);
         Animated.spring(lockAnim, { toValue: 1, useNativeDriver: true, tension: 50, friction: 8 }).start();
+        // Screen Time lock — blocks all apps except school-allowed ones
+        screenTimeLock?.(event.allowedApps ?? []).catch(() => {});
       } else {
         setLockedClass(null);
         lockAnim.setValue(0);
+        screenTimeUnlock?.().catch(() => {});
       }
+    });
+
+    // Emergency unlock from admin
+    socket.on('emergency:unlock', () => {
+      setLockedClass(null);
+      lockAnim.setValue(0);
+      screenTimeUnlock?.().catch(() => {});
+    });
+
+    // Announcement banner
+    socket.on('announcement', (event: { title: string; body: string }) => {
+      showToast(`📢 ${event.title}: ${event.body}`, 'INFO');
     });
     return () => {
       if (toastTimer.current) clearTimeout(toastTimer.current);

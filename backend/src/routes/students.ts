@@ -92,4 +92,54 @@ router.get('/:id/score', async (req: Request, res: Response): Promise<void> => {
   res.json({ score: student });
 });
 
+// POST /api/students/import — CSV bulk import
+// Body: { rows: [{name, email, grade, password?}] }
+router.post('/import', requireRole('ADMIN'), async (req: Request, res: Response): Promise<void> => {
+  const { schoolId } = req.user!;
+  const { rows } = z.object({
+    rows: z.array(z.object({
+      name: z.string(),
+      email: z.string().email(),
+      grade: z.string(),
+      password: z.string().optional(),
+    })),
+  }).parse(req.body);
+
+  const results = { created: 0, skipped: 0, errors: [] as string[] };
+
+  for (const row of rows) {
+    try {
+      const existing = await prisma.user.findUnique({ where: { email: row.email } });
+      if (existing) { results.skipped++; continue; }
+
+      await prisma.user.create({
+        data: {
+          email: row.email,
+          name: row.name,
+          role: 'STUDENT',
+          schoolId,
+          student: { create: { grade: row.grade } },
+        },
+      });
+      results.created++;
+    } catch (err: any) {
+      results.errors.push(`${row.email}: ${err.message}`);
+    }
+  }
+
+  res.json(results);
+});
+
+// POST /api/students/:id/push-token — register Expo push token
+router.post('/:id/push-token', async (req: Request, res: Response): Promise<void> => {
+  const { token, deviceId } = z.object({ token: z.string(), deviceId: z.string() }).parse(req.body);
+
+  await prisma.device.updateMany({
+    where: { deviceId, student: { id: req.params.id } },
+    data: { expoPushToken: token },
+  });
+
+  res.json({ ok: true });
+});
+
 export default router;

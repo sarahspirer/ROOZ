@@ -10,6 +10,8 @@ export type PhocusEvents = {
   'compliance:updated': [event: ComplianceUpdateEvent];
   'student:offline': [data: { studentId: string; studentName: string }];
   'student:violation': [data: { studentId: string; description: string; level: string; app?: string }];
+  'emergency:unlock': [data: { schoolId: string; timestamp: string }];
+  'announcement': [data: { schoolId: string; title: string; body: string; timestamp: string }];
 };
 
 class PhocusEventBus extends EventEmitter {

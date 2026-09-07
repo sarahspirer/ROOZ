@@ -69,6 +69,14 @@ export function registerSocketHandlers(io: PhocusServer): void {
     io.to(`student:${data.studentId}`).emit('student:violation', data);
   });
 
+  eventBus.on('emergency:unlock', (data) => {
+    io.to(`school:${data.schoolId}`).emit('emergency:unlock', data);
+  });
+
+  eventBus.on('announcement', (data) => {
+    io.to(`school:${data.schoolId}`).emit('announcement', data);
+  });
+
   eventBus.on('compliance:recalculate', async (schoolId) => {
     try {
       const summary = await getSchoolComplianceSummary(schoolId);

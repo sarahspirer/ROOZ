@@ -10,10 +10,10 @@ import { login, getStudentById, sendHeartbeat, setToken, StudentData, getRewards
 import { FocusScoreRing } from './components/FocusScoreRing';
 
 const C = {
-  bg: '#080808', card: '#111111', border: '#1f1f1f', muted: '#555555', white: '#ffffff',
-  orange: '#f97316', orangeDim: '#f9731620', orangeBorder: '#f9731640',
-  purple: '#a855f7', green: '#22c55e', greenDim: '#22c55e18', greenBorder: '#22c55e40',
-  red: '#ef4444', redDim: '#ef444418', redBorder: '#ef444440',
+  bg: '#ffffff', card: '#f5f5f7', border: '#e5e5ea', muted: '#6e6e73', text: '#1d1d1f',
+  orange: '#f97316', orangeDim: '#f9731612', orangeBorder: '#f9731635',
+  purple: '#a855f7', green: '#22c55e', greenDim: '#22c55e12', greenBorder: '#22c55e35',
+  red: '#ef4444', redDim: '#ef444412', redBorder: '#ef444435',
 };
 const TIER_COLORS: Record<string, string> = { BRONZE: '#d97706', SILVER: '#94a3b8', GOLD: '#eab308', ELITE: '#a855f7' };
 
@@ -34,7 +34,7 @@ function LoginScreen({ onLogin }: { onLogin: (token: string, user: any) => void 
   };
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
       <View style={s.loginWrap}>
         <View style={s.logoWrap}>
           <View style={s.logoBox}><Text style={s.logoLetter}>R</Text></View>
@@ -170,7 +170,7 @@ function ClassModeScreen({ user, student }: { user: any; student: StudentData })
 
   return (
     <SafeAreaView style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
         <Animated.View style={[s.statusBanner, { backgroundColor: isCompliant ? C.greenDim : C.redDim, borderColor: isCompliant ? C.greenBorder : C.redBorder, transform: [{ scale: pulseAnim }] }]}>
           <View style={[s.dot, { backgroundColor: isCompliant ? C.green : C.red }]} />
@@ -294,61 +294,61 @@ const s = StyleSheet.create({
   scroll: { paddingHorizontal: 24, paddingBottom: 48, alignItems: 'center' },
   loginWrap: { flex: 1, justifyContent: 'center', paddingHorizontal: 28 },
   logoWrap: { alignItems: 'center', marginBottom: 48 },
-  logoBox: { width: 72, height: 72, borderRadius: 20, backgroundColor: C.orange, alignItems: 'center', justifyContent: 'center', marginBottom: 16, shadowColor: C.orange, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 20 },
-  logoLetter: { fontSize: 32, fontWeight: '900', color: C.white },
-  logoName: { fontSize: 36, fontWeight: '900', color: C.white, letterSpacing: 4 },
+  logoBox: { width: 72, height: 72, borderRadius: 20, backgroundColor: C.orange, alignItems: 'center', justifyContent: 'center', marginBottom: 16, shadowColor: C.orange, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 20 },
+  logoLetter: { fontSize: 32, fontWeight: '900', color: '#ffffff' },
+  logoName: { fontSize: 36, fontWeight: '900', color: C.text, letterSpacing: 4 },
   logoSub: { fontSize: 14, color: C.muted, marginTop: 6 },
   form: { gap: 16 },
   inputWrap: { gap: 6 },
   inputLabel: { fontSize: 13, fontWeight: '600', color: C.muted },
-  input: { backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, color: C.white, fontSize: 16 },
-  loginBtn: { backgroundColor: C.orange, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8, shadowColor: C.orange, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 12 },
-  loginBtnText: { fontSize: 17, fontWeight: '800', color: C.white },
+  input: { backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, color: C.text, fontSize: 16 },
+  loginBtn: { backgroundColor: C.orange, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8, shadowColor: C.orange, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 12 },
+  loginBtnText: { fontSize: 17, fontWeight: '700', color: '#ffffff' },
   statusBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 1, borderRadius: 100, paddingHorizontal: 16, paddingVertical: 9, marginTop: 16, marginBottom: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  statusText: { fontSize: 11, fontWeight: '800', letterSpacing: 0.8 },
+  statusText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.6 },
   header: { alignItems: 'center', marginTop: 20, marginBottom: 4 },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
   logoBoxSm: { width: 28, height: 28, borderRadius: 8, backgroundColor: C.orange, alignItems: 'center', justifyContent: 'center' },
-  logoLetterSm: { fontSize: 14, fontWeight: '900', color: C.white },
-  brand: { fontSize: 18, fontWeight: '900', color: C.white, letterSpacing: 3 },
-  studentName: { fontSize: 24, fontWeight: '700', color: C.white },
+  logoLetterSm: { fontSize: 14, fontWeight: '900', color: '#ffffff' },
+  brand: { fontSize: 18, fontWeight: '900', color: C.text, letterSpacing: 3 },
+  studentName: { fontSize: 24, fontWeight: '700', color: C.text },
   ringWrap: { marginVertical: 24 },
-  statsRow: { flexDirection: 'row', gap: 12, width: '100%', marginBottom: 16 },
+  statsRow: { flexDirection: 'row', gap: 10, width: '100%', marginBottom: 16 },
   statCard: { flex: 1, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 16, paddingVertical: 16, alignItems: 'center' },
   statVal: { fontSize: 22, fontWeight: '800' },
   statLbl: { fontSize: 11, color: C.muted, marginTop: 3, fontWeight: '600' },
   tierBadge: { borderWidth: 1, borderRadius: 100, paddingHorizontal: 20, paddingVertical: 8, marginBottom: 16 },
-  tierTxt: { fontSize: 13, fontWeight: '800', letterSpacing: 1.5 },
+  tierTxt: { fontSize: 13, fontWeight: '700', letterSpacing: 1.2 },
   violWrap: { backgroundColor: C.redDim, borderWidth: 1, borderColor: C.redBorder, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 10, marginBottom: 16, width: '100%' },
   violTxt: { color: C.red, fontSize: 13, fontWeight: '600', textAlign: 'center' },
   tip: { fontSize: 13, color: C.muted, textAlign: 'center', lineHeight: 20, paddingHorizontal: 8 },
   rewardsSection: { width: '100%', marginTop: 32 },
-  rewardsHeading: { fontSize: 14, fontWeight: '800', color: C.muted, letterSpacing: 1.2, marginBottom: 12, textTransform: 'uppercase' },
-  rewardCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: C.card, borderWidth: 1, borderRadius: 16, padding: 14, marginBottom: 10 },
+  rewardsHeading: { fontSize: 12, fontWeight: '700', color: C.muted, letterSpacing: 1.2, marginBottom: 12, textTransform: 'uppercase' },
+  rewardCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 16, padding: 14, marginBottom: 10 },
   rewardIcon: { width: 40, height: 40, borderRadius: 10, borderWidth: 1, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   rewardBody: { flex: 1, gap: 3 },
-  rewardName: { fontSize: 14, fontWeight: '700', color: C.white },
+  rewardName: { fontSize: 14, fontWeight: '700', color: C.text },
   rewardDesc: { fontSize: 12, color: C.muted, lineHeight: 17 },
   rewardMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   rewardTier: { fontSize: 11, fontWeight: '700', borderWidth: 1, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   rewardPts: { fontSize: 11, color: C.muted },
   claimBtn: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, alignItems: 'center', justifyContent: 'center', minWidth: 64 },
-  claimBtnClaimed: { backgroundColor: C.green + '12' },
-  claimBtnLocked: { opacity: 0.45 },
+  claimBtnClaimed: { backgroundColor: C.green + '15' },
+  claimBtnLocked: { opacity: 0.4 },
   claimBtnTxt: { fontSize: 12, fontWeight: '700' },
-  toast: { position: 'absolute', top: 56, left: 16, right: 16, zIndex: 90, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#2a0000', borderWidth: 1, borderColor: C.redBorder, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, shadowColor: C.red, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 12 },
-  toastEscalation: { backgroundColor: '#1a0020', borderColor: C.purple + '60' },
+  toast: { position: 'absolute', top: 56, left: 16, right: 16, zIndex: 90, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff5f5', borderWidth: 1, borderColor: C.redBorder, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16 },
+  toastEscalation: { backgroundColor: '#fdf5ff', borderColor: C.purple + '50' },
   toastIcon: { fontSize: 24 },
   toastBody: { flex: 1 },
   toastTitle: { fontSize: 11, fontWeight: '800', color: C.red, letterSpacing: 1.2 },
-  toastDesc: { fontSize: 13, color: C.white, marginTop: 2, lineHeight: 18 },
-  lockOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: '#000', zIndex: 100, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
-  lockIconWrap: { width: 100, height: 100, borderRadius: 28, backgroundColor: '#1a0000', borderWidth: 2, borderColor: '#ef444440', alignItems: 'center', justifyContent: 'center', marginBottom: 28 },
+  toastDesc: { fontSize: 13, color: C.text, marginTop: 2, lineHeight: 18 },
+  lockOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: '#0a0a0a', zIndex: 100, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  lockIconWrap: { width: 100, height: 100, borderRadius: 28, backgroundColor: '#1a0000', borderWidth: 2, borderColor: '#ef444450', alignItems: 'center', justifyContent: 'center', marginBottom: 28 },
   lockEmoji: { fontSize: 48 },
-  lockTitle: { fontSize: 28, fontWeight: '900', color: C.white, letterSpacing: 3, textAlign: 'center' },
+  lockTitle: { fontSize: 28, fontWeight: '900', color: '#ffffff', letterSpacing: 3, textAlign: 'center' },
   lockClass: { fontSize: 16, fontWeight: '700', color: C.red, marginTop: 8, textAlign: 'center' },
-  lockSub: { fontSize: 15, color: C.muted, marginTop: 16, textAlign: 'center', lineHeight: 24 },
-  lockScorePill: { marginTop: 40, backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 100, paddingHorizontal: 20, paddingVertical: 10 },
-  lockScoreTxt: { fontSize: 13, color: C.muted, fontWeight: '600' },
+  lockSub: { fontSize: 15, color: '#8e8e93', marginTop: 16, textAlign: 'center', lineHeight: 24 },
+  lockScorePill: { marginTop: 40, backgroundColor: '#1c1c1e', borderWidth: 1, borderColor: '#2c2c2e', borderRadius: 100, paddingHorizontal: 20, paddingVertical: 10 },
+  lockScoreTxt: { fontSize: 13, color: '#8e8e93', fontWeight: '600' },
 });

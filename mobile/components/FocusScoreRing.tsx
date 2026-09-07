@@ -46,7 +46,7 @@ export function FocusScoreRing({ score, maxScore = 3000, tier, size = 160 }: Pro
           cy={center}
           r={radius}
           fill="none"
-          stroke="#1f1f1f"
+          stroke="#e5e5ea"
           strokeWidth={strokeWidth}
         />
         {/* Progress ring */}
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   score: {
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1d1d1f',
     fontVariant: ['tabular-nums'],
   },
   tier: {

@@ -12,17 +12,18 @@
   }
 
   body {
-    @apply bg-surface text-white;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-surface text-gray-900;
+    font-family: -apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-surface;
+    @apply bg-transparent;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -30,7 +31,7 @@
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-surface-muted;
+    @apply bg-surface-muted/40;
   }
 }
 

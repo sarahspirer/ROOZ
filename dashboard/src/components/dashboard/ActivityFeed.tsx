@@ -38,7 +38,7 @@ export function ActivityFeed() {
   return (
     <div className="bg-surface-card border border-surface-border rounded-xl flex flex-col h-full min-h-0">
       <div className="px-4 py-3 border-b border-surface-border flex items-center justify-between shrink-0">
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Live Activity</h3>
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Live Activity</h3>
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-compliance-green animate-pulse" />
           <span className="text-xs text-surface-muted">Live</span>
@@ -71,7 +71,7 @@ export function ActivityFeed() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-sm font-medium text-white truncate">
+                    <span className="text-sm font-medium text-gray-900 truncate">
                       {event.studentName || 'Student'}
                     </span>
                     <span className="text-xs text-surface-muted shrink-0">

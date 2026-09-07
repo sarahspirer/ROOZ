@@ -76,7 +76,7 @@ export function RewardsView() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white">Rewards</h2>
+          <h2 className="text-xl font-bold text-gray-900">Rewards</h2>
           <p className="text-surface-muted text-sm mt-0.5">Review student reward claims</p>
         </div>
       </div>
@@ -86,7 +86,7 @@ export function RewardsView() {
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              tab === t.id ? 'bg-brand-600 text-white' : 'text-surface-muted hover:text-white'
+              tab === t.id ? 'bg-brand-600 text-gray-900' : 'text-surface-muted hover:text-gray-900'
             }`}>
             {t.label}
           </button>
@@ -118,7 +118,7 @@ export function RewardsView() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-white">{claim.reward.name}</p>
+                      <p className="font-semibold text-gray-900">{claim.reward.name}</p>
                       <p className="text-sm text-surface-muted mt-0.5">{claim.reward.description}</p>
                     </div>
                     <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${
@@ -129,7 +129,7 @@ export function RewardsView() {
                   </div>
 
                   <div className="flex items-center gap-3 mt-2 text-xs text-surface-muted">
-                    <span className="font-medium text-white">{claim.student.user.name}</span>
+                    <span className="font-medium text-gray-900">{claim.student.user.name}</span>
                     <span>·</span>
                     <span>{new Date(claim.claimedAt).toLocaleDateString('en-US', {
                       month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
@@ -188,7 +188,7 @@ export function RewardsView() {
                     {r.requiredTier}
                   </span>
                 </div>
-                <h3 className="font-semibold text-white">{r.name}</h3>
+                <h3 className="font-semibold text-gray-900">{r.name}</h3>
                 <p className="text-sm text-surface-muted mt-1">{r.description}</p>
                 <div className="mt-3 pt-3 border-t border-surface-border flex items-center justify-between text-xs text-surface-muted">
                   <span>{r.requiredScore.toLocaleString()} pts required</span>

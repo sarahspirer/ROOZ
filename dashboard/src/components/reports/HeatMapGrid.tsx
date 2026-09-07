@@ -34,7 +34,7 @@ export function HeatMapGrid() {
 
   return (
     <div className="bg-surface-card border border-surface-border rounded-xl p-6">
-      <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">
+      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-6">
         School Heat Map
       </h3>
 
@@ -56,17 +56,17 @@ export function HeatMapGrid() {
                 heatColor(cell.compliancePercent),
               )}
             >
-              <div className="font-semibold text-white text-sm truncate">{cell.className}</div>
+              <div className="font-semibold text-gray-900 text-sm truncate">{cell.className}</div>
               {cell.room && (
-                <div className="text-xs text-white/60 mt-0.5">Rm {cell.room}</div>
+                <div className="text-xs text-gray-900/60 mt-0.5">Rm {cell.room}</div>
               )}
-              <div className="text-3xl font-bold text-white mt-3">
+              <div className="text-3xl font-bold text-gray-900 mt-3">
                 {cell.compliancePercent}%
               </div>
-              <div className="text-xs text-white/70 mt-1">
+              <div className="text-xs text-gray-900/70 mt-1">
                 {cell.compliant}/{cell.total} compliant
               </div>
-              <div className="text-xs text-white/50 mt-0.5">
+              <div className="text-xs text-gray-900/50 mt-0.5">
                 Avg score: {cell.avgDailyScore}
               </div>
             </div>

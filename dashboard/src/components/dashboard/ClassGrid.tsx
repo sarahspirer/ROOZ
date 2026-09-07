@@ -42,7 +42,7 @@ export function ClassGrid() {
 
   return (
     <div className="bg-surface-card border border-surface-border rounded-xl p-4">
-      <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
         Class Compliance Heat Map
       </h3>
 

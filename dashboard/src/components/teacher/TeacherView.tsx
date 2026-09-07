@@ -151,7 +151,7 @@ export function TeacherView() {
   const cls = selectedClass;
 
   const complianceColor =
-    !cls ? 'text-white'
+    !cls ? 'text-gray-900'
     : cls.compliancePercent >= 95 ? 'text-compliance-green'
     : cls.compliancePercent >= 80 ? 'text-compliance-yellow'
     : 'text-compliance-red';
@@ -171,8 +171,8 @@ export function TeacherView() {
               className={clsx(
                 'text-left px-4 py-3 rounded-xl border transition-all',
                 c.id === cls?.id
-                  ? 'bg-brand-600/20 border-brand-500 text-white'
-                  : 'bg-surface-card border-surface-border text-surface-muted hover:text-white hover:border-surface-muted',
+                  ? 'bg-brand-600/20 border-brand-500 text-gray-900'
+                  : 'bg-surface-card border-surface-border text-surface-muted hover:text-gray-900 hover:border-surface-muted',
               )}
             >
               <div className="font-medium text-sm">{c.name}</div>
@@ -193,7 +193,7 @@ export function TeacherView() {
           {/* Header row */}
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white">{cls.name}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{cls.name}</h1>
               {cls.room && <div className="text-surface-muted mt-0.5">Room {cls.room}</div>}
             </div>
             <div className="text-right">
@@ -210,7 +210,7 @@ export function TeacherView() {
               <button
                 onClick={handleLock}
                 disabled={locking}
-                className="flex-1 bg-compliance-red hover:bg-red-600 disabled:opacity-50 text-white text-2xl font-black rounded-2xl py-8 transition-all active:scale-95 shadow-lg shadow-red-500/20"
+                className="flex-1 bg-compliance-red hover:bg-red-600 disabled:opacity-50 text-gray-900 text-2xl font-black rounded-2xl py-8 transition-all active:scale-95 shadow-lg shadow-red-500/20"
               >
                 {locking ? 'Locking…' : '🔒  LOCK CLASS'}
               </button>
@@ -218,7 +218,7 @@ export function TeacherView() {
               <button
                 onClick={handleUnlock}
                 disabled={locking}
-                className="flex-1 bg-compliance-green hover:bg-green-600 disabled:opacity-50 text-white text-2xl font-black rounded-2xl py-8 transition-all active:scale-95 shadow-lg shadow-green-500/20"
+                className="flex-1 bg-compliance-green hover:bg-green-600 disabled:opacity-50 text-gray-900 text-2xl font-black rounded-2xl py-8 transition-all active:scale-95 shadow-lg shadow-green-500/20"
               >
                 {locking ? 'Unlocking…' : '🔓  UNLOCK CLASS'}
               </button>
@@ -226,7 +226,7 @@ export function TeacherView() {
 
             <button
               onClick={() => setShowAppModal(true)}
-              className="bg-surface-card border border-surface-border hover:border-brand-500 text-white font-semibold rounded-2xl px-6 transition-colors"
+              className="bg-surface-card border border-surface-border hover:border-brand-500 text-gray-900 font-semibold rounded-2xl px-6 transition-colors"
             >
               + Allow App
             </button>
@@ -247,7 +247,7 @@ export function TeacherView() {
           {/* Student list */}
           <div className="bg-surface-card border border-surface-border rounded-xl overflow-hidden flex-1">
             <div className="px-4 py-3 border-b border-surface-border flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
                 Students ({cls.students.length})
               </h3>
               <div className="flex items-center gap-4 text-xs text-surface-muted">
@@ -278,11 +278,11 @@ export function TeacherView() {
                     <div key={student.id} onClick={() => openStudent(student.id)} className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-surface-border/30 transition-colors">
                       <div className={clsx('w-2.5 h-2.5 rounded-full shrink-0', STATUS_DOT[student.status])} />
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-white truncate">{student.name}</div>
+                        <div className="text-sm font-medium text-gray-900 truncate">{student.name}</div>
                         <div className="text-xs text-surface-muted">{STATUS_LABEL[student.status]}</div>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="text-sm font-bold text-white tabular-nums">{student.focusScore}</div>
+                        <div className="text-sm font-bold text-gray-900 tabular-nums">{student.focusScore}</div>
                         <div className="text-xs text-surface-muted">pts</div>
                       </div>
                       {student.violations > 0 && (
@@ -308,7 +308,7 @@ export function TeacherView() {
       {showAppModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-sm space-y-4">
-            <h3 className="text-lg font-bold text-white">Allow an App</h3>
+            <h3 className="text-lg font-bold text-gray-900">Allow an App</h3>
             <p className="text-sm text-surface-muted">
               Enter the app bundle ID to temporarily allow during class.
             </p>
@@ -319,7 +319,7 @@ export function TeacherView() {
                 value={allowAppInput}
                 onChange={(e) => setAllowAppInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAllowApp()}
-                className="w-full bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-500"
+                className="w-full bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-brand-500"
                 autoFocus
               />
               <div className="flex flex-wrap gap-2">
@@ -327,7 +327,7 @@ export function TeacherView() {
                   <button
                     key={app}
                     onClick={() => setAllowAppInput(app)}
-                    className="text-xs bg-surface border border-surface-border text-surface-muted hover:text-white px-2.5 py-1 rounded-full transition-colors"
+                    className="text-xs bg-surface border border-surface-border text-surface-muted hover:text-gray-900 px-2.5 py-1 rounded-full transition-colors"
                   >
                     {app.split('.').pop()}
                   </button>
@@ -337,14 +337,14 @@ export function TeacherView() {
             <div className="flex gap-3">
               <button
                 onClick={() => { setShowAppModal(false); setAllowAppInput(''); }}
-                className="flex-1 bg-surface border border-surface-border text-white rounded-xl py-2.5 font-medium"
+                className="flex-1 bg-surface border border-surface-border text-gray-900 rounded-xl py-2.5 font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAllowApp}
                 disabled={!allowAppInput.trim()}
-                className="flex-1 bg-brand-600 hover:bg-brand-700 disabled:opacity-40 text-white rounded-xl py-2.5 font-medium transition-colors"
+                className="flex-1 bg-brand-600 hover:bg-brand-700 disabled:opacity-40 text-gray-900 rounded-xl py-2.5 font-medium transition-colors"
               >
                 Allow
               </button>

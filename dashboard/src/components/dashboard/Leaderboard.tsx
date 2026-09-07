@@ -37,7 +37,7 @@ export function Leaderboard() {
   return (
     <div className="bg-surface-card border border-surface-border rounded-xl flex flex-col">
       <div className="px-4 py-3 border-b border-surface-border">
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
           Focus Leaderboard
         </h3>
       </div>
@@ -57,7 +57,7 @@ export function Leaderboard() {
                   {idx < 3 ? RANK_ICONS[idx] : <span className="text-surface-muted">{idx + 1}</span>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white truncate">{entry.name}</div>
+                  <div className="text-sm font-medium text-gray-900 truncate">{entry.name}</div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span
                       className={clsx(
@@ -77,7 +77,7 @@ export function Leaderboard() {
                   <AnimatedNumber
                     value={studentScores[entry.id]?.focusScore ?? entry.focusScore}
                     format={(v) => v.toLocaleString()}
-                    className="text-sm font-bold text-white tabular-nums"
+                    className="text-sm font-bold text-gray-900 tabular-nums"
                     flashClass="text-compliance-green"
                   />
                   <div className="text-xs text-surface-muted">pts</div>

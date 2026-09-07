@@ -35,7 +35,7 @@ export function StudentDrawer() {
           <span className="text-sm font-semibold text-surface-muted uppercase tracking-wider">Student Detail</span>
           <button
             onClick={closeStudent}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-surface-muted hover:text-white hover:bg-surface-card transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-surface-muted hover:text-gray-900 hover:bg-surface-card transition-colors"
           >
             ✕
           </button>

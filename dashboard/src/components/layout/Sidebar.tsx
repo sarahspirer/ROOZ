@@ -20,8 +20,8 @@ export function RoozLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   return (
     <span className="inline-flex items-baseline leading-none">
       <span
-        style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 900 }}
-        className={clsx('text-white tracking-tight', sizes[size].rooz)}
+        style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 900, color: '#C8102E' }}
+        className={clsx('tracking-tight', sizes[size].rooz)}
       >
         ROOZ
       </span>
@@ -35,34 +35,35 @@ export function Sidebar({ onSetup }: { onSetup?: () => void }) {
   return (
     <aside
       className={clsx(
-        'flex flex-col bg-surface-card border-r border-surface-border transition-all duration-300 shrink-0',
-        sidebarOpen ? 'w-56' : 'w-16',
+        'flex flex-col bg-white border-r border-surface-border transition-all duration-300 shrink-0',
+        sidebarOpen ? 'w-52' : 'w-16',
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-surface-border min-h-[64px]">
+      <div className="flex items-center gap-3 px-4 py-5 min-h-[64px]">
         {sidebarOpen ? (
           <RoozLogo size="md" />
         ) : (
-          <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shrink-0"
-            style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 900, fontSize: 14, color: 'white' }}>
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: '#C8102E', fontFamily: "'Nunito', sans-serif", fontWeight: 900, fontSize: 14, color: 'white' }}>
             R
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 space-y-1 px-2">
+      <nav className="flex-1 py-2 space-y-0.5 px-2">
         {NAV_ITEMS.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveView(item.id)}
             className={clsx(
-              'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+              'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
               activeView === item.id
-                ? 'bg-brand-600 text-white'
-                : 'text-surface-muted hover:text-white hover:bg-surface-border',
+                ? 'text-white'
+                : 'text-surface-muted hover:text-gray-900 hover:bg-surface-border/60',
             )}
+            style={activeView === item.id ? { background: '#C8102E' } : {}}
           >
             <span className="text-base shrink-0">{item.icon}</span>
             {sidebarOpen && <span>{item.label}</span>}
@@ -71,27 +72,22 @@ export function Sidebar({ onSetup }: { onSetup?: () => void }) {
       </nav>
 
       {/* Bottom */}
-      <div className="p-4 border-t border-surface-border space-y-2">
+      <div className="p-3 border-t border-surface-border space-y-1">
         {onSetup && (
           <button
             onClick={onSetup}
             className={clsx(
-              'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-              'text-surface-muted hover:text-white hover:bg-surface-border',
+              'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+              'text-surface-muted hover:text-gray-900 hover:bg-surface-border/60',
             )}
           >
             <span className="text-base shrink-0">⚙</span>
             {sidebarOpen && <span>Onboard School</span>}
           </button>
         )}
-        {sidebarOpen ? (
-          <div className="text-xs text-surface-muted px-3">
-            <div className="font-medium text-white">ROOZ v1.0</div>
-            <div>School Safety System</div>
-          </div>
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-surface-border flex items-center justify-center text-xs mx-auto">
-            ?
+        {sidebarOpen && (
+          <div className="text-xs text-surface-muted px-3 pt-1">
+            <div className="font-semibold text-gray-700">ROOZ v1.0</div>
           </div>
         )}
       </div>

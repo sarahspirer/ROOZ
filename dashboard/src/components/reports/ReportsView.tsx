@@ -16,7 +16,7 @@ function MetricCard({
   label,
   value,
   sub,
-  color = 'text-white',
+  color = 'text-gray-900',
 }: {
   label: string;
   value: string | number;
@@ -95,7 +95,7 @@ export function ReportsView() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-white font-bold text-lg">Compliance Reports</h2>
+        <h2 className="text-gray-900 font-bold text-lg">Compliance Reports</h2>
         <button
           onClick={handleExport}
           disabled={exporting}
@@ -117,7 +117,7 @@ export function ReportsView() {
                 : metrics.avgCompliance >= 80
                 ? 'text-compliance-yellow'
                 : 'text-compliance-red'
-              : 'text-white'
+              : 'text-gray-900'
           }
         />
         <MetricCard

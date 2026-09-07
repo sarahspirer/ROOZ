@@ -99,7 +99,7 @@ export function StudentsView() {
           placeholder="Search students…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-surface-card border border-surface-border rounded-lg px-4 py-2 text-sm text-white placeholder-surface-muted focus:outline-none focus:border-brand-500 w-64"
+          className="bg-surface-card border border-surface-border rounded-lg px-4 py-2 text-sm text-gray-900 placeholder-surface-muted focus:outline-none focus:border-brand-500 w-64"
         />
         <div className="text-sm text-surface-muted">{students.length} students</div>
         <button
@@ -114,14 +114,14 @@ export function StudentsView() {
       {showImport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
-            <h2 className="text-white font-bold text-lg mb-1">Import Students</h2>
+            <h2 className="text-gray-900 font-bold text-lg mb-1">Import Students</h2>
             <p className="text-surface-muted text-xs mb-4">One student per line: <code className="bg-surface px-1 rounded text-brand-400">Name, email@school.edu, Grade, password</code> (password optional, defaults to "password")</p>
             <textarea
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
               placeholder={"Emma Johnson, emma@student.rooz.school, 10\nJake Smith, jake@student.rooz.school, 11, mypassword"}
               rows={8}
-              className="w-full bg-surface border border-surface-border rounded-lg px-3 py-2.5 text-white text-xs font-mono placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none mb-4"
+              className="w-full bg-surface border border-surface-border rounded-lg px-3 py-2.5 text-gray-900 text-xs font-mono placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none mb-4"
             />
             {importResult && (
               <div className="mb-4 p-3 rounded-lg bg-surface border border-surface-border text-xs space-y-1">
@@ -131,8 +131,8 @@ export function StudentsView() {
               </div>
             )}
             <div className="flex gap-3">
-              <button onClick={() => { setShowImport(false); setImportResult(null); setImportText(''); }} className="flex-1 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-white transition-colors text-sm font-medium">Close</button>
-              <button onClick={handleImport} disabled={importing || !importText.trim()} className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors disabled:opacity-50">
+              <button onClick={() => { setShowImport(false); setImportResult(null); setImportText(''); }} className="flex-1 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-gray-900 transition-colors text-sm font-medium">Close</button>
+              <button onClick={handleImport} disabled={importing || !importText.trim()} className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-gray-900 text-sm font-bold transition-colors disabled:opacity-50">
                 {importing ? 'Importing…' : 'Import'}
               </button>
             </div>
@@ -169,26 +169,26 @@ export function StudentsView() {
                     onClick={() => setSelectedId(s.id)}
                   >
                     <td className="px-4 py-3">
-                      <div className="font-medium text-white text-sm">{s.name}</div>
+                      <div className="font-medium text-gray-900 text-sm">{s.name}</div>
                       <div className="text-xs text-surface-muted">{s.email}</div>
                     </td>
                     <td className="px-4 py-3 text-sm text-surface-muted">{s.grade}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className={clsx('w-2 h-2 rounded-full', STATUS_DOT[s.status])} />
-                        <span className="text-xs text-white">{s.status.replace('_', ' ')}</span>
+                        <span className="text-xs text-gray-900">{s.status.replace('_', ' ')}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm font-bold text-white tabular-nums">
+                    <td className="px-4 py-3 text-sm font-bold text-gray-900 tabular-nums">
                       {s.focusScore.toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-sm text-white tabular-nums">{s.dailyScore}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 tabular-nums">{s.dailyScore}</td>
                     <td className="px-4 py-3">
                       <span className={clsx('text-xs font-bold px-2 py-0.5 rounded', TIER_BADGE[s.tier])}>
                         {s.tier}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-white">
+                    <td className="px-4 py-3 text-sm text-gray-900">
                       {s.streak > 0 ? `🔥 ${s.streak}` : '—'}
                     </td>
                     <td className="px-4 py-3 text-sm">

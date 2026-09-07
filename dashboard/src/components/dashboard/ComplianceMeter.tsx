@@ -61,7 +61,7 @@ export function ComplianceMeter() {
               cy="100"
               r={radius}
               fill="none"
-              stroke="#334155"
+              stroke="#E5E5EA"
               strokeWidth="12"
             />
             {/* Progress ring */}

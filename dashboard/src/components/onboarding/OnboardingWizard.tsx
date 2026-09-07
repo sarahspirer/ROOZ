@@ -35,13 +35,13 @@ function StepIndicator({ steps, current }: { steps: string[]; current: number })
         <React.Fragment key={label}>
           <div className="flex flex-col items-center gap-1">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
-              i < current ? 'bg-brand-600 text-white' :
-              i === current ? 'bg-brand-500 text-white ring-2 ring-brand-500/30' :
+              i < current ? 'bg-brand-600 text-gray-900' :
+              i === current ? 'bg-brand-500 text-gray-900 ring-2 ring-brand-500/30' :
               'bg-surface-border text-surface-muted'
             }`}>
               {i < current ? '✓' : i + 1}
             </div>
-            <span className={`text-xs ${i === current ? 'text-white' : 'text-surface-muted'}`}>{label}</span>
+            <span className={`text-xs ${i === current ? 'text-gray-900' : 'text-surface-muted'}`}>{label}</span>
           </div>
           {i < steps.length - 1 && (
             <div className={`flex-1 h-px mx-2 mb-5 ${i < current ? 'bg-brand-600' : 'bg-surface-border'}`} />
@@ -106,11 +106,11 @@ function CSVImportPanel({
           onChange={(e) => handleParse(e.target.value)}
           placeholder={`name,email${type === 'students' ? ',grade' : ''}\nJohn Smith,john@school.edu${type === 'students' ? ',10' : ''}`}
           rows={5}
-          className="w-full bg-surface border border-surface-border rounded-xl px-4 py-3 text-sm text-white font-mono placeholder-surface-muted focus:outline-none focus:border-brand-500 transition-colors resize-none"
+          className="w-full bg-surface border border-surface-border rounded-xl px-4 py-3 text-sm text-gray-900 font-mono placeholder-surface-muted focus:outline-none focus:border-brand-500 transition-colors resize-none"
         />
         <button
           onClick={() => fileRef.current?.click()}
-          className="absolute bottom-3 right-3 text-xs bg-surface-card border border-surface-border text-surface-muted hover:text-white px-2 py-1 rounded-lg transition-colors"
+          className="absolute bottom-3 right-3 text-xs bg-surface-card border border-surface-border text-surface-muted hover:text-gray-900 px-2 py-1 rounded-lg transition-colors"
         >
           Upload file
         </button>
@@ -125,7 +125,7 @@ function CSVImportPanel({
           <div className="max-h-40 overflow-y-auto">
             {preview.slice(0, 8).map((row, i) => (
               <div key={i} className="flex items-center gap-4 px-4 py-2 border-b border-surface-border/50 last:border-0 text-sm">
-                <span className="text-white flex-1 truncate">{row.name}</span>
+                <span className="text-gray-900 flex-1 truncate">{row.name}</span>
                 <span className="text-surface-muted flex-1 truncate">{row.email}</span>
                 {type === 'students' && <span className="text-surface-muted w-12">Gr. {row.grade}</span>}
               </div>
@@ -152,7 +152,7 @@ function CSVImportPanel({
         <button
           onClick={handleImport}
           disabled={importing}
-          className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+          className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-gray-900 text-sm font-semibold transition-colors disabled:opacity-50"
         >
           {importing ? 'Importing…' : `Import ${preview.length} ${label}`}
         </button>
@@ -209,10 +209,10 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-surface-border">
           <div>
-            <h2 className="text-white font-bold text-lg">School Setup</h2>
+            <h2 className="text-gray-900 font-bold text-lg">School Setup</h2>
             <p className="text-surface-muted text-xs mt-0.5">Get your school running in minutes</p>
           </div>
-          <button onClick={onClose} className="text-surface-muted hover:text-white transition-colors text-xl leading-none">✕</button>
+          <button onClick={onClose} className="text-surface-muted hover:text-gray-900 transition-colors text-xl leading-none">✕</button>
         </div>
 
         <div className="px-6 py-6">
@@ -223,7 +223,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
             <div className="space-y-4 text-center">
               <div className="w-16 h-16 rounded-2xl bg-brand-600/20 border border-brand-600/30 flex items-center justify-center text-3xl mx-auto">🏫</div>
               <div>
-                <h3 className="text-white font-semibold text-lg">Welcome to ROOZ</h3>
+                <h3 className="text-gray-900 font-semibold text-lg">Welcome to ROOZ</h3>
                 <p className="text-surface-muted text-sm mt-2 leading-relaxed">
                   Let's get your school set up. We'll import your students and teachers so the dashboard is ready to go.
                   This takes about 2 minutes.
@@ -247,7 +247,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
           {/* Step: Students */}
           {step === 'students' && (
             <div>
-              <h3 className="text-white font-semibold mb-1">Import Students</h3>
+              <h3 className="text-gray-900 font-semibold mb-1">Import Students</h3>
               <CSVImportPanel
                 type="students" label="students"
                 template={STUDENT_TEMPLATE}
@@ -260,7 +260,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
           {/* Step: Teachers */}
           {step === 'teachers' && (
             <div>
-              <h3 className="text-white font-semibold mb-1">Import Teachers</h3>
+              <h3 className="text-gray-900 font-semibold mb-1">Import Teachers</h3>
               <CSVImportPanel
                 type="teachers" label="teachers"
                 template={TEACHER_TEMPLATE}
@@ -275,7 +275,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
             <div className="text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-compliance-green/15 border border-compliance-green/30 flex items-center justify-center text-3xl mx-auto">✓</div>
               <div>
-                <h3 className="text-white font-semibold text-lg">You're all set!</h3>
+                <h3 className="text-gray-900 font-semibold text-lg">You're all set!</h3>
                 <p className="text-surface-muted text-sm mt-2">
                   {summary.students > 0 && `${summary.students} students`}
                   {summary.students > 0 && summary.teachers > 0 && ' and '}
@@ -284,7 +284,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
                 </p>
               </div>
               <div className="bg-surface border border-surface-border rounded-xl p-4 text-left text-sm text-surface-muted space-y-1.5">
-                <div>📱 Students log in at <span className="text-white">myrooz.com</span> with their school email</div>
+                <div>📱 Students log in at <span className="text-gray-900">myrooz.com</span> with their school email</div>
                 <div>🔑 Default password: <code className="text-brand-500">changeme123</code></div>
                 <div>📊 Their scores appear live on this dashboard</div>
               </div>
@@ -297,7 +297,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
           {step !== 'welcome' && step !== 'done' ? (
             <button
               onClick={() => setStep(step === 'teachers' ? 'students' : 'welcome')}
-              className="px-4 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-white hover:border-white/20 transition-colors text-sm"
+              className="px-4 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-gray-900 hover:border-white/20 transition-colors text-sm"
             >
               Back
             </button>
@@ -305,25 +305,25 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
 
           {step === 'welcome' && (
             <button onClick={() => setStep('students')}
-              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors">
+              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-gray-900 font-semibold text-sm transition-colors">
               Get Started →
             </button>
           )}
           {step === 'students' && (
             <button onClick={() => setStep('teachers')}
-              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors">
+              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-gray-900 font-semibold text-sm transition-colors">
               Next: Add Teachers →
             </button>
           )}
           {step === 'teachers' && (
             <button onClick={() => setStep('done')}
-              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors">
+              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-gray-900 font-semibold text-sm transition-colors">
               Finish Setup →
             </button>
           )}
           {step === 'done' && (
             <button onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors">
+              className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-gray-900 font-semibold text-sm transition-colors">
               Go to Dashboard
             </button>
           )}

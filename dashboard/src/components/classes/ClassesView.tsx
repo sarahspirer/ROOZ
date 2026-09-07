@@ -66,7 +66,7 @@ export function ClassesView() {
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold text-white">{cls.name}</h3>
+                    <h3 className="font-semibold text-gray-900">{cls.name}</h3>
                     {cls.room && <div className="text-xs text-surface-muted">Room {cls.room}</div>}
                   </div>
                   {cls.hasActiveSession && (

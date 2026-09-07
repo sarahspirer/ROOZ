@@ -69,8 +69,8 @@ export function ParentView() {
             <button key={c.id} onClick={() => setSelected(c.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                 selected === c.id
-                  ? 'bg-brand-600 border-brand-600 text-white'
-                  : 'bg-surface-card border-surface-border text-surface-muted hover:text-white'
+                  ? 'bg-brand-600 border-brand-600 text-gray-900'
+                  : 'bg-surface-card border-surface-border text-surface-muted hover:text-gray-900'
               }`}>
               {c.name.split(' ')[0]}
             </button>
@@ -82,7 +82,7 @@ export function ParentView() {
       <div className="bg-surface-card border border-surface-border rounded-2xl p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-white">{child!.name}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{child!.name}</h2>
             <p className="text-surface-muted text-sm">Grade {child!.grade} · {child!.classes.map(c => c.name).join(', ')}</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold border"
@@ -128,7 +128,7 @@ export function ParentView() {
       {/* Violations */}
       <div className="bg-surface-card border border-surface-border rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-white">Recent Activity</h3>
+          <h3 className="font-semibold text-gray-900">Recent Activity</h3>
           {child!.totalViolations > 0 && (
             <span className="text-xs bg-compliance-red/15 text-compliance-red border border-compliance-red/30 px-2 py-0.5 rounded-full">
               {child!.totalViolations} total violation{child!.totalViolations !== 1 ? 's' : ''}
@@ -148,7 +148,7 @@ export function ParentView() {
                   {v.level === 'ESCALATION' ? '🚨' : '⚠'}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white">{v.description}</p>
+                  <p className="text-sm text-gray-900">{v.description}</p>
                   <p className="text-xs text-surface-muted mt-0.5">
                     {new Date(v.timestamp).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                   </p>

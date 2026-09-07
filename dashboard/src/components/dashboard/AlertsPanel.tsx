@@ -51,7 +51,7 @@ function AlertRow({ alert, onDismiss }: { alert: AlertEvent; onDismiss: () => vo
           </div>
           <button
             onClick={() => openStudent(alert.studentId)}
-            className="text-sm font-semibold text-white hover:text-brand-500 transition-colors text-left mt-0.5"
+            className="text-sm font-semibold text-gray-900 hover:text-brand-500 transition-colors text-left mt-0.5"
           >
             {alert.studentName}
           </button>
@@ -60,7 +60,7 @@ function AlertRow({ alert, onDismiss }: { alert: AlertEvent; onDismiss: () => vo
         {!isEscalation && (
           <button
             onClick={onDismiss}
-            className="shrink-0 text-surface-muted hover:text-white transition-colors text-lg leading-none mt-0.5"
+            className="shrink-0 text-surface-muted hover:text-gray-900 transition-colors text-lg leading-none mt-0.5"
           >
             ×
           </button>
@@ -79,7 +79,7 @@ function AlertRow({ alert, onDismiss }: { alert: AlertEvent; onDismiss: () => vo
               <button
                 onClick={handleResolve}
                 disabled={action !== 'idle'}
-                className="flex-1 text-xs font-semibold py-1.5 rounded-lg border border-surface-border bg-surface hover:bg-surface-card text-white transition-colors disabled:opacity-50"
+                className="flex-1 text-xs font-semibold py-1.5 rounded-lg border border-surface-border bg-surface hover:bg-surface-card text-gray-900 transition-colors disabled:opacity-50"
               >
                 {action === 'resolving' ? 'Resolving…' : 'Resolve'}
               </button>
@@ -92,7 +92,7 @@ function AlertRow({ alert, onDismiss }: { alert: AlertEvent; onDismiss: () => vo
               </button>
               <button
                 onClick={onDismiss}
-                className="w-6 shrink-0 text-surface-muted hover:text-white transition-colors text-lg leading-none"
+                className="w-6 shrink-0 text-surface-muted hover:text-gray-900 transition-colors text-lg leading-none"
               >
                 ×
               </button>
@@ -114,9 +114,9 @@ export function AlertsPanel() {
   return (
     <div className="bg-surface-card border border-surface-border rounded-xl flex flex-col">
       <div className="px-4 py-3 border-b border-surface-border flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Alerts</h3>
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Alerts</h3>
         {escalations.length > 0 && (
-          <span className="bg-compliance-red text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+          <span className="bg-compliance-red text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
             {escalations.length}
           </span>
         )}

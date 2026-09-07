@@ -48,35 +48,30 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="mb-3">
-            <RoozLogo size="lg" />
-          </div>
-          <p className="text-surface-muted mt-2">School Phone Management System</p>
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-10">
+          <RoozLogo size="lg" />
+          <p className="text-surface-muted mt-2 text-sm">School Phone Management</p>
         </div>
 
-        <form
-          onSubmit={handleLogin}
-          className="bg-surface-card border border-surface-border rounded-2xl p-8 space-y-5"
-        >
+        <form onSubmit={handleLogin} className="bg-white rounded-2xl p-8 space-y-4 shadow-sm border border-surface-border">
           <div>
-            <label className="block text-sm font-medium text-surface-muted mb-2">Email</label>
+            <label className="block text-xs font-semibold text-surface-muted mb-1.5 uppercase tracking-wide">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-surface border border-surface-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
+              className="w-full bg-surface border border-surface-border rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-brand-500 transition-colors"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-surface-muted mb-2">Password</label>
+            <label className="block text-xs font-semibold text-surface-muted mb-1.5 uppercase tracking-wide">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-surface border border-surface-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-500 transition-colors"
+              className="w-full bg-surface border border-surface-border rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-brand-500 transition-colors"
               required
             />
           </div>
@@ -84,7 +79,8 @@ function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg py-3 transition-colors disabled:opacity-50"
+            className="w-full text-white font-semibold rounded-xl py-3 transition-all disabled:opacity-50 hover:opacity-90 mt-2"
+            style={{ background: '#C8102E' }}
           >
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
@@ -143,7 +139,7 @@ export function App() {
             <RoozLogo size="md" />
             <div className="flex items-center gap-3">
               <span className="text-xs text-surface-muted">{auth.user.name}</span>
-              <button onClick={clearAuth} className="text-xs text-surface-muted hover:text-white transition-colors">Sign out</button>
+              <button onClick={clearAuth} className="text-xs text-surface-muted hover:text-gray-900 transition-colors">Sign out</button>
             </div>
           </div>
           <div className="flex flex-1 overflow-hidden">
@@ -161,7 +157,7 @@ export function App() {
         <div className="flex flex-col flex-1 min-w-0">
           <div className="flex items-center gap-3 px-6 py-4 border-b border-surface-border bg-surface-card shrink-0">
             <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center font-bold text-white text-xs">R</div>
-            <span className="font-bold text-white tracking-wide">ROOZ</span>
+            <span className="font-bold tracking-wide" style={{ color: '#C8102E' }}>ROOZ</span>
             <span className="ml-auto text-xs text-surface-muted">{auth.user.name}</span>
           </div>
           <main className="flex-1 overflow-y-auto p-6">

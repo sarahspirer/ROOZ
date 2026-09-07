@@ -66,7 +66,7 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
       {!hideBackButton && (
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-sm text-surface-muted hover:text-white transition-colors"
+          className="flex items-center gap-2 text-sm text-surface-muted hover:text-gray-900 transition-colors"
         >
           ← Back to students
         </button>
@@ -79,7 +79,7 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
         <div className="flex-1">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-white">{student.name}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{student.name}</h2>
               <div className="text-surface-muted mt-1">{student.email}</div>
               <div className="text-surface-muted text-sm">Grade {student.grade}</div>
             </div>
@@ -90,15 +90,15 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
 
           <div className="grid grid-cols-3 gap-4 mt-4">
             <div className="bg-surface p-3 rounded-lg">
-              <div className="text-2xl font-bold text-white">{student.dailyScore}</div>
+              <div className="text-2xl font-bold text-gray-900">{student.dailyScore}</div>
               <div className="text-xs text-surface-muted mt-1">Today</div>
             </div>
             <div className="bg-surface p-3 rounded-lg">
-              <div className="text-2xl font-bold text-white">{student.weeklyScore}</div>
+              <div className="text-2xl font-bold text-gray-900">{student.weeklyScore}</div>
               <div className="text-xs text-surface-muted mt-1">This week</div>
             </div>
             <div className="bg-surface p-3 rounded-lg">
-              <div className="text-2xl font-bold text-white">🔥 {student.streak}</div>
+              <div className="text-2xl font-bold text-gray-900">🔥 {student.streak}</div>
               <div className="text-xs text-surface-muted mt-1">Day streak</div>
             </div>
           </div>
@@ -116,7 +116,7 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
       {/* Violations */}
       <div className="bg-surface-card border border-surface-border rounded-xl">
         <div className="px-4 py-3 border-b border-surface-border">
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
             Recent Violations ({violations.length})
           </h3>
         </div>
@@ -136,7 +136,7 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
                   {v.level}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm text-white">{v.description}</div>
+                  <div className="text-sm text-gray-900">{v.description}</div>
                   {v.appAttempted && (
                     <div className="text-xs text-surface-muted mt-0.5">App: {v.appAttempted}</div>
                   )}

@@ -36,7 +36,7 @@ export function ComplianceTrend() {
   return (
     <div className="bg-surface-card border border-surface-border rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
           Compliance Trend
         </h3>
         <div className="flex gap-1">
@@ -46,8 +46,8 @@ export function ComplianceTrend() {
               onClick={() => setDays(d)}
               className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                 days === d
-                  ? 'bg-brand-600 text-white'
-                  : 'text-surface-muted hover:text-white'
+                  ? 'bg-brand-600 text-gray-900'
+                  : 'text-surface-muted hover:text-gray-900'
               }`}
             >
               {d}d

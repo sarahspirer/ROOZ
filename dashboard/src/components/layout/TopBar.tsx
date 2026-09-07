@@ -94,30 +94,30 @@ export function TopBar() {
 
   return (
     <>
-      <header className="h-14 bg-surface-card border-b border-surface-border flex items-center justify-between px-4 shrink-0">
+      <header className="h-14 bg-white border-b border-surface-border flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-4">
           <button
             onClick={toggleSidebar}
-            className="p-1.5 rounded hover:bg-surface-border text-surface-muted hover:text-white transition-colors"
+            className="p-1.5 rounded-lg hover:bg-surface text-surface-muted hover:text-gray-900 transition-colors"
             aria-label="Toggle sidebar"
           >
             ☰
           </button>
-          <h1 className="font-semibold text-white">{VIEW_LABELS[activeView] ?? activeView}</h1>
+          <h1 className="font-semibold text-gray-900">{VIEW_LABELS[activeView] ?? activeView}</h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* Live compliance badge */}
-          <div className="flex items-center gap-2 bg-surface border border-surface-border rounded-lg px-3 py-1.5">
+          <div className="flex items-center gap-2 bg-surface border border-surface-border rounded-xl px-3 py-1.5">
             <div className={`w-2 h-2 rounded-full bg-current animate-pulse-slow ${colorClass}`} />
-            <span className="text-xs text-surface-muted">School Compliance</span>
+            <span className="text-xs text-surface-muted">Compliance</span>
             <span className={`text-sm font-bold ${colorClass}`}>{compliancePercent}%</span>
           </div>
 
           {/* Emergency Mode */}
           <button
             onClick={() => setShowEmergency(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-compliance-red/40 bg-compliance-red/10 text-compliance-red hover:bg-compliance-red/20 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-compliance-red text-white hover:opacity-90 transition-all"
           >
             🚨 Emergency
           </button>
@@ -125,7 +125,7 @@ export function TopBar() {
           {/* Announce */}
           <button
             onClick={() => setShowAnnounce(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-surface-border bg-surface text-surface-muted hover:text-white hover:border-white/20 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface border border-surface-border text-gray-700 hover:bg-surface-border transition-all"
           >
             📢 Announce
           </button>
@@ -137,10 +137,10 @@ export function TopBar() {
               disabled={push.loading}
               title={push.subscribed ? 'Disable push alerts' : 'Enable push alerts'}
               className={`
-                flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all
+                flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all
                 ${push.subscribed
-                  ? 'bg-compliance-green/10 border-compliance-green/30 text-compliance-green hover:bg-compliance-green/20'
-                  : 'bg-surface border-surface-border text-surface-muted hover:text-white hover:border-white/20'
+                  ? 'bg-compliance-green/10 border-compliance-green/30 text-compliance-green'
+                  : 'bg-surface border-surface-border text-surface-muted hover:bg-surface-border'
                 }
                 ${push.loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
               `}
@@ -155,40 +155,32 @@ export function TopBar() {
             onClick={() => setShowConfirm(true)}
             disabled={resetting}
             className={`
-              flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all
+              flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all
               ${flash === 'success'
-                ? 'bg-compliance-green/10 border-compliance-green/40 text-compliance-green'
+                ? 'bg-compliance-green/10 border-compliance-green/30 text-compliance-green'
                 : flash === 'error'
-                  ? 'bg-compliance-red/10 border-compliance-red/40 text-compliance-red'
-                  : 'bg-accent-500/10 border-accent-500/30 text-accent-500 hover:bg-accent-500/20'
+                  ? 'bg-compliance-red/10 border-compliance-red/30 text-compliance-red'
+                  : 'bg-surface border-surface-border text-surface-muted hover:bg-surface-border'
               }
               ${resetting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
           >
-            {resetting ? (
-              <span className="animate-spin">↻</span>
-            ) : flash === 'success' ? (
-              '✓'
-            ) : flash === 'error' ? (
-              '✕'
-            ) : (
-              '⟳'
-            )}
+            {resetting ? <span className="animate-spin">↻</span> : flash === 'success' ? '✓' : flash === 'error' ? '✕' : '⟳'}
             {resetting ? 'Resetting…' : flash === 'success' ? 'Reset!' : flash === 'error' ? 'Failed' : 'Reset Demo'}
           </button>
 
           {/* User info */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-sm font-bold text-white">
+          <div className="flex items-center gap-2 pl-1">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: '#C8102E' }}>
               {auth.user?.name?.charAt(0) ?? '?'}
             </div>
             <div className="hidden sm:block">
-              <div className="text-sm font-medium text-white">{auth.user?.name}</div>
+              <div className="text-sm font-medium text-gray-900">{auth.user?.name}</div>
               <div className="text-xs text-surface-muted capitalize">{auth.user?.role?.toLowerCase()}</div>
             </div>
             <button
               onClick={clearAuth}
-              className="ml-2 text-xs text-surface-muted hover:text-white transition-colors"
+              className="ml-1 text-xs text-surface-muted hover:text-gray-900 transition-colors"
             >
               Sign out
             </button>
@@ -198,29 +190,29 @@ export function TopBar() {
 
       {/* Emergency Mode modal */}
       {showEmergency && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-surface-card border border-compliance-red/40 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
             {emergencyDone ? (
               <div className="text-center py-4">
                 <div className="text-4xl mb-3">🔓</div>
                 <h2 className="text-compliance-green font-bold text-xl mb-2">All Devices Unlocked</h2>
-                <p className="text-surface-muted text-sm">Students have been notified. Emergency mode active.</p>
+                <p className="text-surface-muted text-sm">Students have been notified.</p>
               </div>
             ) : (
               <>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-compliance-red/15 border border-compliance-red/40 flex items-center justify-center text-xl">🚨</div>
+                  <div className="w-10 h-10 rounded-full bg-compliance-red/10 flex items-center justify-center text-xl">🚨</div>
                   <div>
-                    <h2 className="text-white font-bold text-lg">Emergency Mode</h2>
+                    <h2 className="text-gray-900 font-bold text-lg">Emergency Mode</h2>
                     <p className="text-compliance-red text-xs font-semibold">CAMPUS-WIDE UNLOCK</p>
                   </div>
                 </div>
                 <p className="text-sm text-surface-muted mb-6 leading-relaxed">
-                  This will instantly unlock <strong className="text-white">every student device</strong> on campus, end all class sessions, and send an emergency notification to all students. Use only in a real emergency.
+                  This will instantly unlock <strong className="text-gray-900">every student device</strong> on campus, end all class sessions, and send an emergency notification.
                 </p>
                 <div className="flex gap-3">
-                  <button onClick={() => setShowEmergency(false)} className="flex-1 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-white transition-colors text-sm font-medium">Cancel</button>
-                  <button onClick={handleEmergencyUnlock} disabled={emergencyLoading} className="flex-1 py-2.5 rounded-xl bg-compliance-red hover:bg-red-700 text-white text-sm font-bold transition-colors disabled:opacity-50">
+                  <button onClick={() => setShowEmergency(false)} className="flex-1 py-2.5 rounded-xl bg-surface text-gray-700 text-sm font-medium hover:bg-surface-border transition-colors">Cancel</button>
+                  <button onClick={handleEmergencyUnlock} disabled={emergencyLoading} className="flex-1 py-2.5 rounded-xl bg-compliance-red text-white text-sm font-bold transition-colors disabled:opacity-50 hover:opacity-90">
                     {emergencyLoading ? 'Unlocking…' : '🔓 Unlock All Now'}
                   </button>
                 </div>
@@ -232,12 +224,12 @@ export function TopBar() {
 
       {/* Announcement modal */}
       {showAnnounce && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-brand-600/15 border border-brand-600/30 flex items-center justify-center text-xl">📢</div>
+              <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-xl">📢</div>
               <div>
-                <h2 className="text-white font-bold text-lg">Send Announcement</h2>
+                <h2 className="text-gray-900 font-bold text-lg">Send Announcement</h2>
                 <p className="text-surface-muted text-xs">Pushes to all student lock screens</p>
               </div>
             </div>
@@ -246,21 +238,21 @@ export function TopBar() {
                 value={announceTitle}
                 onChange={(e) => setAnnounceTitle(e.target.value)}
                 placeholder="Title (e.g. Lunch in the gym today)"
-                className="w-full bg-surface border border-surface-border rounded-lg px-3 py-2.5 text-white text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500"
+                className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-gray-900 text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500"
               />
               <textarea
                 value={announceBody}
                 onChange={(e) => setAnnounceBody(e.target.value)}
                 placeholder="Message body…"
                 rows={3}
-                className="w-full bg-surface border border-surface-border rounded-lg px-3 py-2.5 text-white text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none"
+                className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-gray-900 text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none"
               />
             </div>
-            {announceFlash === 'sent' && <p className="text-compliance-green text-xs mb-3">✓ Announcement sent to all students</p>}
+            {announceFlash === 'sent' && <p className="text-compliance-green text-xs mb-3">✓ Sent to all students</p>}
             {announceFlash === 'error' && <p className="text-compliance-red text-xs mb-3">Failed to send. Try again.</p>}
             <div className="flex gap-3">
-              <button onClick={() => setShowAnnounce(false)} className="flex-1 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-white transition-colors text-sm font-medium">Cancel</button>
-              <button onClick={handleAnnounce} disabled={announceSending || !announceTitle.trim() || !announceBody.trim()} className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors disabled:opacity-50">
+              <button onClick={() => setShowAnnounce(false)} className="flex-1 py-2.5 rounded-xl bg-surface text-gray-700 text-sm font-medium hover:bg-surface-border transition-colors">Cancel</button>
+              <button onClick={handleAnnounce} disabled={announceSending || !announceTitle.trim() || !announceBody.trim()} className="flex-1 py-2.5 rounded-xl text-white text-sm font-bold transition-colors disabled:opacity-50 hover:opacity-90" style={{ background: '#C8102E' }}>
                 {announceSending ? 'Sending…' : 'Send Now'}
               </button>
             </div>
@@ -270,36 +262,21 @@ export function TopBar() {
 
       {/* Confirm modal */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-accent-500/15 border border-accent-500/30 flex items-center justify-center text-xl">
-                ⟳
-              </div>
+              <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-xl">⟳</div>
               <div>
-                <h2 className="text-white font-bold text-lg">Reset Demo</h2>
+                <h2 className="text-gray-900 font-bold text-lg">Reset Demo</h2>
                 <p className="text-surface-muted text-xs">This cannot be undone</p>
               </div>
             </div>
-
             <p className="text-sm text-surface-muted mb-6 leading-relaxed">
-              All student scores, violations, and streaks will be wiped and the live simulator will restart from a clean slate.
-              Use this before a pitch or demo.
+              All student scores, violations, and streaks will be wiped. Use this before a pitch or demo.
             </p>
-
             <div className="flex gap-3">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="flex-1 py-2.5 rounded-xl border border-surface-border text-surface-muted hover:text-white hover:border-white/20 transition-colors text-sm font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleReset}
-                className="flex-1 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-600 text-white text-sm font-bold transition-colors"
-              >
-                Yes, Reset
-              </button>
+              <button onClick={() => setShowConfirm(false)} className="flex-1 py-2.5 rounded-xl bg-surface text-gray-700 text-sm font-medium hover:bg-surface-border transition-colors">Cancel</button>
+              <button onClick={handleReset} className="flex-1 py-2.5 rounded-xl text-white text-sm font-bold transition-colors hover:opacity-90" style={{ background: '#C8102E' }}>Yes, Reset</button>
             </div>
           </div>
         </div>

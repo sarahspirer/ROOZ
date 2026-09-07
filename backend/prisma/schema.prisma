@@ -30,6 +30,7 @@ enum ViolationLevel {
 
 enum ComplianceStatus {
   COMPLIANT
+  GRACE_PERIOD
   NON_COMPLIANT
   OFFLINE
   BYPASSING
@@ -48,14 +49,19 @@ enum EventType {
 }
 
 model School {
-  id             String   @id @default(cuid())
-  name           String
-  address        String?
-  lat            Float?
-  lng            Float?
-  geofenceRadius Int      @default(200)
-  timezone       String   @default("America/New_York")
-  createdAt      DateTime @default(now())
+  id              String   @id @default(cuid())
+  name            String
+  address         String?
+  lat             Float?
+  lng             Float?
+  geofenceRadius  Int      @default(200)
+  timezone        String   @default("America/New_York")
+  schoolHoursStart String  @default("08:00")
+  schoolHoursEnd   String  @default("15:00")
+  graceMinutes     Int     @default(5)
+  allowedApps      String[]
+  policyEmailsEnabled Boolean @default(true)
+  createdAt       DateTime @default(now())
 
   users   User[]
   classes Class[]

@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { id: 'violations', label: 'violations', icon: '⚠' },
   { id: 'rewards', label: 'rewards', icon: '★' },
   { id: 'reports', label: 'reports', icon: '▣' },
+  { id: 'settings', label: 'settings', icon: '⚙' },
 ] as const;
 
 export function RoozLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {

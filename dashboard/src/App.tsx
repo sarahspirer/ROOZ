@@ -18,6 +18,7 @@ import { TeacherView } from './components/teacher/TeacherView';
 import { ParentView } from './components/parent/ParentView';
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
 import { StudentDrawer } from './components/students/StudentDrawer';
+import { SettingsView } from './components/settings/SettingsView';
 
 function LoginPage() {
   const setAuth = usePhocusStore((s) => s.setAuth);
@@ -122,6 +123,7 @@ const VIEW_COMPONENTS: Record<string, React.ComponentType> = {
   students: StudentsView,
   reports: ReportsView,
   rewards: RewardsView,
+  settings: SettingsView,
 };
 
 export function App() {

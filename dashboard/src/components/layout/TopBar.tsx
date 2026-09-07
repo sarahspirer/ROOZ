@@ -4,12 +4,13 @@ import { useCompliance } from '../../hooks/useCompliance';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
 
 const VIEW_LABELS: Record<string, string> = {
-  dashboard: 'Live Dashboard',
-  classes: 'Classes',
-  students: 'Students',
-  violations: 'Violations',
-  rewards: 'Rewards',
-  reports: 'Reports',
+  dashboard: 'live dashboard',
+  classes: 'classes',
+  students: 'students',
+  violations: 'violations',
+  rewards: 'rewards',
+  reports: 'reports',
+  settings: 'settings',
 };
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';

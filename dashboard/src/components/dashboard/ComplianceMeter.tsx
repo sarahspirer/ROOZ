@@ -53,19 +53,21 @@ export function ComplianceMeter() {
       )}
 
       {compliance && (
-        <div className="mt-6 grid grid-cols-3 gap-2 text-center">
-          <div>
-            <div className="text-2xl font-black text-compliance-green">{compliance.compliantCount}</div>
-            <div className="stat-label">on task</div>
-          </div>
-          <div>
-            <div className="text-2xl font-black text-compliance-yellow">{compliance.nonCompliantCount}</div>
-            <div className="stat-label">off task</div>
-          </div>
-          <div>
-            <div className="text-2xl font-black text-surface-muted">{compliance.offlineCount}</div>
-            <div className="stat-label">offline</div>
-          </div>
+        <div className="mt-6 space-y-2 w-full">
+          {[
+            { label: 'locked in', value: compliance.compliantCount, color: '#34C759' },
+            { label: 'grace period', value: compliance.bypassingCount, color: '#FF9500' },
+            { label: 'not locked in', value: compliance.nonCompliantCount, color: '#C8102E' },
+            { label: 'no lock needed', value: compliance.offlineCount, color: '#8E8E93' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="flex items-center justify-between py-1.5 border-b border-surface-border last:border-0">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full" style={{ background: color }} />
+                <span className="text-xs text-surface-muted lowercase">{label}</span>
+              </div>
+              <span className="text-sm font-black tabular-nums" style={{ color }}>{value}</span>
+            </div>
+          ))}
         </div>
       )}
     </div>

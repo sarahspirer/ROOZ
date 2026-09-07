@@ -110,7 +110,7 @@ function CSVImportPanel({
         />
         <button
           onClick={() => fileRef.current?.click()}
-          className="absolute bottom-3 right-3 text-xs bg-surface-card border border-surface-border text-surface-muted hover:text-gray-900 px-2 py-1 rounded-lg transition-colors"
+          className="absolute bottom-3 right-3 text-xs card text-surface-muted hover:text-gray-900 px-2 py-1 rounded-lg transition-colors"
         >
           Upload file
         </button>
@@ -205,7 +205,7 @@ export function OnboardingWizard({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-surface-card border border-surface-border rounded-2xl w-full max-w-lg shadow-2xl">
+      <div className="card w-full max-w-lg shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-surface-border">
           <div>

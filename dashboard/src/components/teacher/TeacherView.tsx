@@ -226,7 +226,7 @@ export function TeacherView() {
 
             <button
               onClick={() => setShowAppModal(true)}
-              className="bg-surface-card border border-surface-border hover:border-brand-500 text-gray-900 font-semibold rounded-2xl px-6 transition-colors"
+              className="card hover:border-brand-500 text-gray-900 font-semibold rounded-2xl px-6 transition-colors"
             >
               + Allow App
             </button>
@@ -245,9 +245,9 @@ export function TeacherView() {
           )}
 
           {/* Student list */}
-          <div className="bg-surface-card border border-surface-border rounded-xl overflow-hidden flex-1">
+          <div className="card overflow-hidden flex-1">
             <div className="px-4 py-3 border-b border-surface-border flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+              <h3 className="section-label">
                 Students ({cls.students.length})
               </h3>
               <div className="flex items-center gap-4 text-xs text-surface-muted">
@@ -307,7 +307,7 @@ export function TeacherView() {
       {/* Allow app modal */}
       {showAppModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-sm space-y-4">
+          <div className="card p-6 w-full max-w-sm space-y-4">
             <h3 className="text-lg font-bold text-gray-900">Allow an App</h3>
             <p className="text-sm text-surface-muted">
               Enter the app bundle ID to temporarily allow during class.

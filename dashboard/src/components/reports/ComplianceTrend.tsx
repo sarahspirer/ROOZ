@@ -34,9 +34,9 @@ export function ComplianceTrend() {
   }, [days]);
 
   return (
-    <div className="bg-surface-card border border-surface-border rounded-xl p-6">
+    <div className="card p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+        <h3 className="section-label">
           Compliance Trend
         </h3>
         <div className="flex gap-1">

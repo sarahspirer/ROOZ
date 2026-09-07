@@ -73,7 +73,7 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
       )}
 
       {/* Profile header */}
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6 flex items-start gap-6">
+      <div className="card p-6 flex items-start gap-6">
         <FocusRing score={student.focusScore} tier={student.tier} size={140} />
 
         <div className="flex-1">
@@ -106,7 +106,7 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
       </div>
 
       {/* Violation sparkline */}
-      <div className="bg-surface-card border border-surface-border rounded-xl px-5 py-4">
+      <div className="card px-5 py-4">
         <div className="text-xs font-semibold text-surface-muted uppercase tracking-wider mb-3">
           Violation History
         </div>
@@ -114,9 +114,9 @@ export function StudentProfile({ studentId, onBack, hideBackButton = false }: Pr
       </div>
 
       {/* Violations */}
-      <div className="bg-surface-card border border-surface-border rounded-xl">
+      <div className="card">
         <div className="px-4 py-3 border-b border-surface-border">
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+          <h3 className="section-label">
             Recent Violations ({violations.length})
           </h3>
         </div>

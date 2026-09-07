@@ -92,22 +92,25 @@ function LoginPage() {
 
 function DashboardHome() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
-      {/* Left column */}
-      <div className="lg:col-span-1 flex flex-col gap-6">
-        <ComplianceMeter />
-        <AlertsPanel />
-      </div>
+    <div className="flex flex-col gap-5 h-full">
+      {/* Main grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 flex-1">
+        {/* Left: compliance hero */}
+        <div className="lg:col-span-1 flex flex-col gap-5">
+          <ComplianceMeter />
+          <AlertsPanel />
+        </div>
 
-      {/* Middle column */}
-      <div className="lg:col-span-2 flex flex-col gap-6">
-        <ClassGrid />
-        <ActivityFeed />
-      </div>
+        {/* Center: classes + activity */}
+        <div className="lg:col-span-2 flex flex-col gap-5">
+          <ClassGrid />
+          <ActivityFeed />
+        </div>
 
-      {/* Right column */}
-      <div className="lg:col-span-1">
-        <Leaderboard />
+        {/* Right: leaderboard */}
+        <div className="lg:col-span-1">
+          <Leaderboard />
+        </div>
       </div>
     </div>
   );
@@ -175,7 +178,7 @@ export function App() {
       <Sidebar onSetup={() => setShowOnboarding(true)} />
       <div className="flex flex-col flex-1 min-w-0">
         <TopBar />
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-5">
           <ViewComponent />
         </main>
       </div>

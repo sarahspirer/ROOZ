@@ -40,7 +40,7 @@ export function ViolationSparkline({ violations, maxBars = 20 }: Props) {
             >
               {/* Tooltip */}
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center z-10 pointer-events-none">
-                <div className="bg-surface-card border border-surface-border rounded-lg px-2.5 py-1.5 text-xs whitespace-nowrap shadow-xl">
+                <div className="card px-2.5 py-1.5 text-xs whitespace-nowrap shadow-xl">
                   <div className="font-semibold" style={{ color }}>{v.level}</div>
                   <div className="text-surface-muted mt-0.5">{v.description}</div>
                   <div className="text-compliance-red mt-0.5">{v.scoreImpact} pts</div>

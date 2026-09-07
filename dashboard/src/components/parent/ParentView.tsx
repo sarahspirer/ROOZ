@@ -79,7 +79,7 @@ export function ParentView() {
       )}
 
       {/* Header card */}
-      <div className="bg-surface-card border border-surface-border rounded-2xl p-6">
+      <div className="card p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{child!.name}</h2>
@@ -118,7 +118,7 @@ export function ParentView() {
           { label: 'This Week', value: child!.weeklyScore, color: '#a855f7' },
           { label: 'Day Streak', value: `🔥 ${child!.streak}`, color: '#22c55e' },
         ].map(({ label, value, color }) => (
-          <div key={label} className="bg-surface-card border border-surface-border rounded-xl p-4 text-center">
+          <div key={label} className="card p-4 text-center">
             <div className="text-2xl font-bold" style={{ color }}>{value}</div>
             <div className="text-xs text-surface-muted mt-1">{label}</div>
           </div>
@@ -126,7 +126,7 @@ export function ParentView() {
       </div>
 
       {/* Violations */}
-      <div className="bg-surface-card border border-surface-border rounded-2xl p-5">
+      <div className="card p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Recent Activity</h3>
           {child!.totalViolations > 0 && (

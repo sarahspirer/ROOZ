@@ -56,7 +56,7 @@ export function ClassDrillDown({ classId, onBack }: Props) {
         ← Back to classes
       </button>
 
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6">
+      <div className="card p-6">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{cls.name}</h2>
@@ -95,9 +95,9 @@ export function ClassDrillDown({ classId, onBack }: Props) {
       </div>
 
       {/* Student grid */}
-      <div className="bg-surface-card border border-surface-border rounded-xl">
+      <div className="card">
         <div className="px-4 py-3 border-b border-surface-border">
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+          <h3 className="section-label">
             Students ({total})
           </h3>
         </div>

@@ -33,8 +33,8 @@ export function HeatMapGrid() {
   }, []);
 
   return (
-    <div className="bg-surface-card border border-surface-border rounded-xl p-6">
-      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-6">
+    <div className="card p-6">
+      <h3 className="section-label mb-6">
         School Heat Map
       </h3>
 

@@ -82,7 +82,7 @@ export function RewardsView() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface-card border border-surface-border rounded-xl p-1 w-fit">
+      <div className="flex gap-1 card p-1 w-fit">
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -107,7 +107,7 @@ export function RewardsView() {
           <div className="space-y-3">
             {claims.map((claim) => (
               <div key={claim.id}
-                className="bg-surface-card border border-surface-border rounded-2xl p-5 flex items-start gap-4">
+                className="card p-5 flex items-start gap-4">
                 {/* Tier badge */}
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
                   style={{ backgroundColor: TIER_COLOR[claim.reward.requiredTier] + '20',
@@ -177,7 +177,7 @@ export function RewardsView() {
           {rewards.map((r) => {
             const color = TIER_COLOR[r.requiredTier];
             return (
-              <div key={r.id} className="bg-surface-card border border-surface-border rounded-2xl p-5">
+              <div key={r.id} className="card p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
                     style={{ backgroundColor: color + '20', border: `1px solid ${color}40` }}>

@@ -56,12 +56,12 @@ export function ClassesView() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-40 bg-surface-card border border-surface-border rounded-xl animate-pulse" />
+              <div key={i} className="h-40 card animate-pulse" />
             ))
           : classes.map((cls) => (
               <div
                 key={cls.id}
-                className="bg-surface-card border border-surface-border rounded-xl p-4 cursor-pointer hover:border-brand-500/50 transition-all"
+                className="card p-4 cursor-pointer hover:border-brand-500/50 transition-all"
                 onClick={() => setSelectedId(cls.id)}
               >
                 <div className="flex items-start justify-between">

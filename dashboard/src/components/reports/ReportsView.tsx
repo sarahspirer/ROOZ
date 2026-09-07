@@ -24,7 +24,7 @@ function MetricCard({
   color?: string;
 }) {
   return (
-    <div className="bg-surface-card border border-surface-border rounded-xl p-5">
+    <div className="card p-5">
       <div className="text-xs font-semibold text-surface-muted uppercase tracking-wider mb-2">
         {label}
       </div>

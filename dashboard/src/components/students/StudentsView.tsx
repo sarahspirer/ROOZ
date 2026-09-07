@@ -99,7 +99,7 @@ export function StudentsView() {
           placeholder="Search students…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-surface-card border border-surface-border rounded-lg px-4 py-2 text-sm text-gray-900 placeholder-surface-muted focus:outline-none focus:border-brand-500 w-64"
+          className="card px-4 py-2 text-sm text-gray-900 placeholder-surface-muted focus:outline-none focus:border-brand-500 w-64"
         />
         <div className="text-sm text-surface-muted">{students.length} students</div>
         <button
@@ -113,7 +113,7 @@ export function StudentsView() {
       {/* CSV Import Modal */}
       {showImport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
+          <div className="card p-6 w-full max-w-lg mx-4 shadow-2xl">
             <h2 className="text-gray-900 font-bold text-lg mb-1">Import Students</h2>
             <p className="text-surface-muted text-xs mb-4">One student per line: <code className="bg-surface px-1 rounded text-brand-400">Name, email@school.edu, Grade, password</code> (password optional, defaults to "password")</p>
             <textarea
@@ -140,7 +140,7 @@ export function StudentsView() {
         </div>
       )}
 
-      <div className="bg-surface-card border border-surface-border rounded-xl overflow-hidden">
+      <div className="card overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-surface-border">

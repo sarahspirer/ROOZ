@@ -107,83 +107,59 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Live compliance badge */}
-          <div className="flex items-center gap-2 bg-surface border border-surface-border rounded-xl px-3 py-1.5">
-            <div className={`w-2 h-2 rounded-full bg-current animate-pulse-slow ${colorClass}`} />
-            <span className="text-xs text-surface-muted">Compliance</span>
-            <span className={`text-sm font-bold ${colorClass}`}>{compliancePercent}%</span>
+          {/* Live compliance pill */}
+          <div className="flex items-center gap-2 bg-surface rounded-xl px-3 py-1.5">
+            <div className={`w-1.5 h-1.5 rounded-full bg-current animate-pulse-slow ${colorClass}`} />
+            <span className={`text-sm font-black tabular-nums ${colorClass}`}>{compliancePercent}%</span>
+            <span className="text-xs text-surface-muted">compliance</span>
           </div>
 
-          {/* Emergency Mode */}
+          {/* Emergency */}
           <button
             onClick={() => setShowEmergency(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-compliance-red text-white hover:opacity-90 transition-all"
+            className="px-3 py-1.5 rounded-xl text-xs font-bold bg-compliance-red text-white hover:opacity-90 transition-all"
           >
-            🚨 Emergency
+            🚨 emergency
           </button>
 
           {/* Announce */}
           <button
             onClick={() => setShowAnnounce(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface border border-surface-border text-gray-700 hover:bg-surface-border transition-all"
+            className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface text-gray-600 hover:bg-surface-border transition-all"
           >
-            📢 Announce
+            📢 announce
           </button>
 
-          {/* Push notifications toggle */}
+          {/* Push toggle */}
           {push.supported && (
             <button
               onClick={push.subscribed ? push.unsubscribe : push.subscribe}
               disabled={push.loading}
-              title={push.subscribed ? 'Disable push alerts' : 'Enable push alerts'}
-              className={`
-                flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all
-                ${push.subscribed
-                  ? 'bg-compliance-green/10 border-compliance-green/30 text-compliance-green'
-                  : 'bg-surface border-surface-border text-surface-muted hover:bg-surface-border'
-                }
-                ${push.loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-              `}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${push.loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${push.subscribed ? 'bg-compliance-green/10 text-compliance-green' : 'bg-surface text-surface-muted hover:bg-surface-border'}`}
             >
-              {push.subscribed ? '🔔' : '🔕'}
-              {push.subscribed ? 'Alerts On' : 'Alerts Off'}
+              {push.subscribed ? '🔔 on' : '🔕 off'}
             </button>
           )}
 
-          {/* Demo Reset button */}
+          {/* Reset demo */}
           <button
             onClick={() => setShowConfirm(true)}
             disabled={resetting}
-            className={`
-              flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all
-              ${flash === 'success'
-                ? 'bg-compliance-green/10 border-compliance-green/30 text-compliance-green'
-                : flash === 'error'
-                  ? 'bg-compliance-red/10 border-compliance-red/30 text-compliance-red'
-                  : 'bg-surface border-surface-border text-surface-muted hover:bg-surface-border'
-              }
-              ${resetting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-            `}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${resetting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${flash === 'success' ? 'bg-compliance-green/10 text-compliance-green' : flash === 'error' ? 'bg-compliance-red/10 text-compliance-red' : 'bg-surface text-surface-muted hover:bg-surface-border'}`}
           >
-            {resetting ? <span className="animate-spin">↻</span> : flash === 'success' ? '✓' : flash === 'error' ? '✕' : '⟳'}
-            {resetting ? 'Resetting…' : flash === 'success' ? 'Reset!' : flash === 'error' ? 'Failed' : 'Reset Demo'}
+            {resetting ? '↻' : flash === 'success' ? '✓ reset' : flash === 'error' ? '✕ failed' : '⟳ reset demo'}
           </button>
 
-          {/* User info */}
-          <div className="flex items-center gap-2 pl-1">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: '#C8102E' }}>
+          {/* User */}
+          <div className="flex items-center gap-2 pl-1 border-l border-surface-border ml-1">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white shrink-0" style={{ background: '#C8102E' }}>
               {auth.user?.name?.charAt(0) ?? '?'}
             </div>
             <div className="hidden sm:block">
-              <div className="text-sm font-medium text-gray-900">{auth.user?.name}</div>
-              <div className="text-xs text-surface-muted capitalize">{auth.user?.role?.toLowerCase()}</div>
+              <div className="text-xs font-semibold text-gray-900 leading-tight">{auth.user?.name}</div>
+              <div className="text-xs text-surface-muted lowercase">{auth.user?.role?.toLowerCase()}</div>
             </div>
-            <button
-              onClick={clearAuth}
-              className="ml-1 text-xs text-surface-muted hover:text-gray-900 transition-colors"
-            >
-              Sign out
-            </button>
+            <button onClick={clearAuth} className="ml-1 text-xs text-surface-muted hover:text-gray-900 transition-colors lowercase">out</button>
           </div>
         </div>
       </header>

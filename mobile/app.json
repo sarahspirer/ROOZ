@@ -14,6 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.rooz.app",
+      "deploymentTarget": "16.0",
       "infoPlist": {
         "UIBackgroundModes": [
           "fetch",
@@ -39,6 +40,7 @@
       ]
     },
     "plugins": [
+      "./plugins/withFamilyControls",
       "expo-location",
       [
         "expo-background-fetch",

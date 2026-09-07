@@ -36,19 +36,19 @@ export function ActivityFeed() {
   const listRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="bg-surface-card border border-surface-border rounded-xl flex flex-col h-full min-h-0">
-      <div className="px-4 py-3 border-b border-surface-border flex items-center justify-between shrink-0">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Live Activity</h3>
+    <div className="card flex flex-col h-full min-h-0">
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <p className="section-label">live activity</p>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-compliance-green animate-pulse" />
-          <span className="text-xs text-surface-muted">Live</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-compliance-green animate-pulse" />
+          <span className="text-xs text-surface-muted">live</span>
         </div>
       </div>
 
-      <div ref={listRef} className="flex-1 overflow-y-auto overscroll-contain">
+      <div ref={listRef} className="flex-1 overflow-y-auto overscroll-contain -mx-5">
         {activityFeed.length === 0 ? (
-          <div className="flex items-center justify-center h-32 text-surface-muted text-sm">
-            Waiting for events…
+          <div className="flex items-center justify-center h-24 text-surface-muted text-sm lowercase">
+            waiting for events…
           </div>
         ) : (
           <div className="divide-y divide-surface-border">
@@ -57,7 +57,7 @@ export function ActivityFeed() {
                 key={event.id}
                 onClick={() => event.studentId && openStudent(event.studentId)}
                 className={clsx(
-                  'flex items-start gap-3 px-4 py-3 transition-colors hover:bg-surface-border/30 cursor-pointer',
+                  'flex items-start gap-3 px-5 py-3 transition-colors hover:bg-surface cursor-pointer',
                   idx === 0 && 'animate-scroll-up',
                 )}
               >

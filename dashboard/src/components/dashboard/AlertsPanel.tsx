@@ -112,20 +112,20 @@ export function AlertsPanel() {
   const sorted = [...escalations, ...others];
 
   return (
-    <div className="bg-surface-card border border-surface-border rounded-xl flex flex-col">
-      <div className="px-4 py-3 border-b border-surface-border flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Alerts</h3>
+    <div className="card flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <p className="section-label">alerts</p>
         {escalations.length > 0 && (
-          <span className="bg-compliance-red text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+          <span className="bg-compliance-red text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
             {escalations.length}
           </span>
         )}
       </div>
 
-      <div className="divide-y divide-surface-border max-h-96 overflow-y-auto">
+      <div className="divide-y divide-surface-border max-h-72 overflow-y-auto -mx-5">
         {sorted.length === 0 ? (
-          <div className="flex items-center justify-center h-24 text-surface-muted text-sm">
-            No active alerts
+          <div className="flex items-center justify-center h-20 text-surface-muted text-sm lowercase">
+            no active alerts
           </div>
         ) : (
           sorted.slice(0, 20).map((alert) => (

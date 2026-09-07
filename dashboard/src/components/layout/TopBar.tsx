@@ -103,7 +103,7 @@ export function TopBar() {
           >
             ☰
           </button>
-          <h1 className="font-semibold text-gray-900">{VIEW_LABELS[activeView] ?? activeView}</h1>
+          <h1 className="font-bold text-gray-900 lowercase tracking-tight">{VIEW_LABELS[activeView] ?? activeView}</h1>
         </div>
 
         <div className="flex items-center gap-2">

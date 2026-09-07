@@ -3,28 +3,28 @@ import clsx from 'clsx';
 import { usePhocusStore } from '../../store/phocusStore';
 
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: '▦' },
-  { id: 'classes', label: 'Classes', icon: '⬛' },
-  { id: 'students', label: 'Students', icon: '◉' },
-  { id: 'violations', label: 'Violations', icon: '⚠' },
-  { id: 'rewards', label: 'Rewards', icon: '★' },
-  { id: 'reports', label: 'Reports', icon: '▣' },
+  { id: 'dashboard', label: 'dashboard', icon: '▦' },
+  { id: 'classes', label: 'classes', icon: '⬛' },
+  { id: 'students', label: 'students', icon: '◉' },
+  { id: 'violations', label: 'violations', icon: '⚠' },
+  { id: 'rewards', label: 'rewards', icon: '★' },
+  { id: 'reports', label: 'reports', icon: '▣' },
 ] as const;
 
 export function RoozLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-  const sizes = {
-    sm: { my: 'text-sm', rooz: 'text-base' },
-    md: { my: 'text-lg', rooz: 'text-2xl' },
-    lg: { my: 'text-2xl', rooz: 'text-4xl' },
-  };
+  const fontSize = size === 'sm' ? 18 : size === 'md' ? 26 : 38;
   return (
-    <span className="inline-flex items-baseline leading-none">
-      <span
-        style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 900, color: '#C8102E' }}
-        className={clsx('tracking-tight', sizes[size].rooz)}
-      >
-        ROOZ
-      </span>
+    <span
+      style={{
+        fontFamily: "'Nunito', -apple-system, sans-serif",
+        fontWeight: 900,
+        color: '#C8102E',
+        fontSize,
+        letterSpacing: '-0.03em',
+        lineHeight: 1,
+      }}
+    >
+      rooz
     </span>
   );
 }
@@ -40,13 +40,19 @@ export function Sidebar({ onSetup }: { onSetup?: () => void }) {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 min-h-[64px]">
+      <div className="flex items-center gap-2.5 px-4 py-5 min-h-[64px]">
         {sidebarOpen ? (
-          <RoozLogo size="md" />
+          <div className="flex items-center gap-1.5">
+            {/* Kangaroo emoji as mascot */}
+            <span style={{ fontSize: 22 }}>🦘</span>
+            <RoozLogo size="md" />
+          </div>
         ) : (
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: '#C8102E', fontFamily: "'Nunito', sans-serif", fontWeight: 900, fontSize: 14, color: 'white' }}>
-            R
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-white text-xs font-black"
+            style={{ background: '#C8102E', fontFamily: 'Nunito, sans-serif' }}
+          >
+            r
           </div>
         )}
       </div>
@@ -58,15 +64,15 @@ export function Sidebar({ onSetup }: { onSetup?: () => void }) {
             key={item.id}
             onClick={() => setActiveView(item.id)}
             className={clsx(
-              'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+              'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all',
               activeView === item.id
-                ? 'text-white'
-                : 'text-surface-muted hover:text-gray-900 hover:bg-surface-border/60',
+                ? 'text-white font-semibold'
+                : 'text-surface-muted hover:text-gray-900 hover:bg-surface font-medium',
             )}
             style={activeView === item.id ? { background: '#C8102E' } : {}}
           >
-            <span className="text-base shrink-0">{item.icon}</span>
-            {sidebarOpen && <span>{item.label}</span>}
+            <span className="text-sm shrink-0">{item.icon}</span>
+            {sidebarOpen && <span className="lowercase">{item.label}</span>}
           </button>
         ))}
       </nav>
@@ -76,18 +82,15 @@ export function Sidebar({ onSetup }: { onSetup?: () => void }) {
         {onSetup && (
           <button
             onClick={onSetup}
-            className={clsx(
-              'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
-              'text-surface-muted hover:text-gray-900 hover:bg-surface-border/60',
-            )}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-surface-muted hover:text-gray-900 hover:bg-surface transition-all"
           >
-            <span className="text-base shrink-0">⚙</span>
-            {sidebarOpen && <span>Onboard School</span>}
+            <span className="text-sm shrink-0">⚙</span>
+            {sidebarOpen && <span className="lowercase">onboard school</span>}
           </button>
         )}
         {sidebarOpen && (
-          <div className="text-xs text-surface-muted px-3 pt-1">
-            <div className="font-semibold text-gray-700">ROOZ v1.0</div>
+          <div className="px-3 pt-1">
+            <div className="text-xs text-surface-muted">v1.0 · $4.99/student/mo</div>
           </div>
         )}
       </div>

@@ -5,6 +5,28 @@ import { usePhocusStore } from '../../store/phocusStore';
 import { useSocket } from '../../hooks/useSocket';
 import { StudentDrawer } from '../students/StudentDrawer';
 
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
+
+type NotifType = 'HOMEWORK' | 'ASSIGNMENT' | 'TEST' | 'REMINDER' | 'ANNOUNCEMENT';
+
+interface ScheduledNotif {
+  id: string;
+  title: string;
+  body: string;
+  type: NotifType;
+  scheduledAt: string;
+  sentAt: string | null;
+  classId: string | null;
+}
+
+const TYPE_META: Record<NotifType, { icon: string; label: string }> = {
+  HOMEWORK:     { icon: '📚', label: 'homework' },
+  ASSIGNMENT:   { icon: '📝', label: 'assignment' },
+  TEST:         { icon: '📋', label: 'test' },
+  REMINDER:     { icon: '🔔', label: 'reminder' },
+  ANNOUNCEMENT: { icon: '📢', label: 'announcement' },
+};
+
 interface StudentRow {
   id: string;
   name: string;
@@ -48,6 +70,18 @@ export function TeacherView() {
   const [loading, setLoading] = useState(true);
   const [allowAppInput, setAllowAppInput] = useState('');
   const [showAppModal, setShowAppModal] = useState(false);
+
+  // Notifications
+  const [showNotifModal, setShowNotifModal] = useState(false);
+  const [notifType, setNotifType] = useState<NotifType>('HOMEWORK');
+  const [notifTitle, setNotifTitle] = useState('');
+  const [notifBody, setNotifBody] = useState('');
+  const [notifScheduledAt, setNotifScheduledAt] = useState('');
+  const [notifTarget, setNotifTarget] = useState<'class' | 'all'>('class');
+  const [notifSending, setNotifSending] = useState(false);
+  const [notifFlash, setNotifFlash] = useState<'idle' | 'sent' | 'scheduled' | 'error'>('idle');
+  const [scheduledNotifs, setScheduledNotifs] = useState<ScheduledNotif[]>([]);
+  const [bellTime, setBellTime] = useState<string | null>(null);
 
   const loadClasses = useCallback(async () => {
     setLoading(true);
@@ -96,6 +130,32 @@ export function TeacherView() {
 
   useEffect(() => { loadClasses(); }, [loadClasses]);
 
+  const loadNotifications = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('rooz_token');
+      const res = await fetch(`${API_URL}/api/notifications`, {
+        headers: { Authorization: `Bearer ${token ?? ''}` },
+      });
+      const data = await res.json();
+      setScheduledNotifs(data.notifications ?? []);
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    loadNotifications();
+    // Load school bell time
+    (async () => {
+      try {
+        const token = localStorage.getItem('rooz_token');
+        const res = await fetch(`${API_URL}/api/settings`, {
+          headers: { Authorization: `Bearer ${token ?? ''}` },
+        });
+        const data = await res.json();
+        setBellTime(data.schoolHoursEnd ?? null);
+      } catch { /* ignore */ }
+    })();
+  }, [loadNotifications]);
+
   // Refresh when socket emits a class status change
   useEffect(() => {
     if (selectedClass && classStatuses[selectedClass.id]) {
@@ -127,6 +187,69 @@ export function TeacherView() {
     } finally {
       setLocking(false);
     }
+  };
+
+  const openNotifModal = () => {
+    setNotifTitle('');
+    setNotifBody('');
+    setNotifType('HOMEWORK');
+    setNotifScheduledAt('');
+    setNotifTarget(selectedClass ? 'class' : 'all');
+    setNotifFlash('idle');
+    setShowNotifModal(true);
+  };
+
+  const buildBellDatetime = (): string | null => {
+    if (!bellTime) return null;
+    const today = new Date().toISOString().slice(0, 10);
+    return `${today}T${bellTime}:00`;
+  };
+
+  const sendNotification = async (scheduleAt?: string) => {
+    if (!notifTitle.trim() || !notifBody.trim()) return;
+    setNotifSending(true);
+    try {
+      const token = localStorage.getItem('rooz_token');
+      const payload: any = {
+        title: notifTitle.trim(),
+        body: notifBody.trim(),
+        type: notifType,
+        scheduledAt: scheduleAt ?? new Date().toISOString(),
+        classId: notifTarget === 'class' && selectedClass ? selectedClass.id : undefined,
+      };
+      const res = await fetch(`${API_URL}/api/notifications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token ?? ''}` },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      const { notification } = await res.json();
+
+      // If send now (no schedule or schedule is past), send immediately
+      if (!scheduleAt || new Date(scheduleAt) <= new Date()) {
+        await fetch(`${API_URL}/api/notifications/${notification.id}/send`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token ?? ''}` },
+        });
+        setNotifFlash('sent');
+      } else {
+        setNotifFlash('scheduled');
+      }
+      await loadNotifications();
+      setTimeout(() => { setNotifFlash('idle'); setShowNotifModal(false); }, 2000);
+    } catch { setNotifFlash('error'); setTimeout(() => setNotifFlash('idle'), 3000); }
+    finally { setNotifSending(false); }
+  };
+
+  const cancelNotification = async (id: string) => {
+    try {
+      const token = localStorage.getItem('rooz_token');
+      await fetch(`${API_URL}/api/notifications/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token ?? ''}` },
+      });
+      await loadNotifications();
+    } catch { /* ignore */ }
   };
 
   const handleAllowApp = async () => {
@@ -228,7 +351,14 @@ export function TeacherView() {
               onClick={() => setShowAppModal(true)}
               className="card hover:border-brand-500 text-gray-900 font-semibold rounded-2xl px-6 transition-colors"
             >
-              + Allow App
+              + app
+            </button>
+
+            <button
+              onClick={openNotifModal}
+              className="card hover:border-brand-500 text-gray-900 font-semibold rounded-2xl px-6 transition-colors"
+            >
+              📬 notify
             </button>
           </div>
 
@@ -295,6 +425,36 @@ export function TeacherView() {
               )}
             </div>
           </div>
+          {/* Scheduled notifications mini-list */}
+          {scheduledNotifs.filter((n) => !n.sentAt).length > 0 && (
+            <div className="card">
+              <div className="px-4 py-3 border-b border-surface-border">
+                <h3 className="section-label">scheduled notifications</h3>
+              </div>
+              <div className="divide-y divide-surface-border">
+                {scheduledNotifs
+                  .filter((n) => !n.sentAt)
+                  .map((n) => (
+                    <div key={n.id} className="flex items-center gap-3 px-4 py-3">
+                      <span className="text-lg">{TYPE_META[n.type]?.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-gray-900 truncate">{n.title}</div>
+                        <div className="text-xs text-surface-muted">
+                          {new Date(n.scheduledAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          {n.classId ? ' · this class' : ' · all students'}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => cancelNotification(n.id)}
+                        className="text-xs text-surface-muted hover:text-compliance-red transition-colors px-2 py-1 rounded"
+                      >
+                        cancel
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center text-surface-muted">
@@ -303,6 +463,121 @@ export function TeacherView() {
       )}
 
       <StudentDrawer />
+
+      {/* Notification compose modal */}
+      {showNotifModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-xl">📬</div>
+              <div>
+                <h2 className="font-bold text-gray-900 text-lg">send notification</h2>
+                <p className="text-xs text-surface-muted">push to student lock screens</p>
+              </div>
+            </div>
+
+            {/* Type picker */}
+            <div className="flex gap-2 flex-wrap">
+              {(Object.entries(TYPE_META) as [NotifType, { icon: string; label: string }][]).map(([t, m]) => (
+                <button
+                  key={t}
+                  onClick={() => setNotifType(t)}
+                  className={clsx(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all',
+                    notifType === t
+                      ? 'text-white'
+                      : 'bg-surface text-surface-muted hover:text-gray-900',
+                  )}
+                  style={notifType === t ? { background: '#C8102E' } : undefined}
+                >
+                  {m.icon} {m.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Title + body */}
+            <div className="space-y-3">
+              <input
+                value={notifTitle}
+                onChange={(e) => setNotifTitle(e.target.value)}
+                placeholder="title"
+                className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-gray-900 text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500"
+              />
+              <textarea
+                value={notifBody}
+                onChange={(e) => setNotifBody(e.target.value)}
+                placeholder="message…"
+                rows={3}
+                className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-gray-900 text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none"
+              />
+            </div>
+
+            {/* Target */}
+            {selectedClass && (
+              <div className="flex gap-2">
+                {(['class', 'all'] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setNotifTarget(t)}
+                    className={clsx(
+                      'flex-1 py-2 rounded-xl text-xs font-bold transition-all',
+                      notifTarget === t ? 'text-white' : 'bg-surface text-surface-muted',
+                    )}
+                    style={notifTarget === t ? { background: '#C8102E' } : undefined}
+                  >
+                    {t === 'class' ? `📍 ${selectedClass.name}` : '🏫 all students'}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Custom schedule */}
+            <div className="flex items-center gap-2">
+              <input
+                type="datetime-local"
+                value={notifScheduledAt}
+                onChange={(e) => setNotifScheduledAt(e.target.value)}
+                className="flex-1 bg-surface border border-surface-border rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-brand-500"
+              />
+              {notifScheduledAt && (
+                <button onClick={() => setNotifScheduledAt('')} className="text-xs text-surface-muted hover:text-gray-900">clear</button>
+              )}
+            </div>
+
+            {/* Feedback */}
+            {notifFlash === 'sent' && <p className="text-compliance-green text-xs font-semibold">✓ sent to students</p>}
+            {notifFlash === 'scheduled' && <p className="text-compliance-green text-xs font-semibold">✓ scheduled</p>}
+            {notifFlash === 'error' && <p className="text-compliance-red text-xs font-semibold">failed — try again</p>}
+
+            {/* Actions */}
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setShowNotifModal(false)}
+                className="px-4 py-2.5 rounded-xl bg-surface text-gray-700 text-sm font-medium hover:bg-surface-border transition-colors"
+              >
+                cancel
+              </button>
+              {bellTime && (
+                <button
+                  onClick={() => sendNotification(buildBellDatetime() ?? undefined)}
+                  disabled={notifSending || !notifTitle.trim() || !notifBody.trim()}
+                  className="flex-1 py-2.5 rounded-xl bg-surface text-gray-900 text-sm font-bold transition-colors disabled:opacity-40 hover:bg-surface-border"
+                >
+                  🔔 schedule for bell ({bellTime})
+                </button>
+              )}
+              <button
+                onClick={() => sendNotification(notifScheduledAt || undefined)}
+                disabled={notifSending || !notifTitle.trim() || !notifBody.trim()}
+                className="flex-1 py-2.5 rounded-xl text-white text-sm font-bold transition-colors disabled:opacity-40 hover:opacity-90"
+                style={{ background: '#C8102E' }}
+              >
+                {notifSending ? 'sending…' : notifScheduledAt ? '📅 schedule' : '🚀 send now'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Allow app modal */}
       {showAppModal && (

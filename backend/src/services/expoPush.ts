@@ -82,3 +82,30 @@ export async function pushEmergencyUnlock(schoolId: string): Promise<void> {
     { type: 'EMERGENCY_UNLOCK' },
   );
 }
+
+export async function pushToSchool(schoolId: string, title: string, body: string, data?: Record<string, unknown>): Promise<void> {
+  return pushToAllStudents(schoolId, title, body, data);
+}
+
+export async function pushToClass(classId: string, title: string, body: string, data?: Record<string, unknown>): Promise<void> {
+  const enrollments = await prisma.classEnrollment.findMany({
+    where: { classId, isActive: true },
+    select: { studentId: true },
+  });
+
+  const devices = await prisma.device.findMany({
+    where: {
+      expoPushToken: { not: null },
+      isActive: true,
+      studentId: { in: enrollments.map(e => e.studentId) },
+    },
+    select: { expoPushToken: true },
+  });
+
+  const messages: PushMessage[] = devices
+    .filter(d => d.expoPushToken)
+    .map(d => ({ to: d.expoPushToken!, title, body, sound: 'default', priority: 'high', data }));
+
+  await sendBatch(messages);
+  log('info', `[ExpoPush] Sent to class ${classId}: ${messages.length} devices`);
+}

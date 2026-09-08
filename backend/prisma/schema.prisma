@@ -249,3 +249,24 @@ model StudentReward {
   reviewedAt DateTime?
   note       String?
 }
+
+enum NotificationType {
+  HOMEWORK
+  ASSIGNMENT
+  TEST
+  REMINDER
+  ANNOUNCEMENT
+}
+
+model ScheduledNotification {
+  id          String           @id @default(cuid())
+  schoolId    String
+  classId     String?
+  title       String
+  body        String
+  type        NotificationType @default(ANNOUNCEMENT)
+  scheduledAt DateTime
+  sentAt      DateTime?
+  createdBy   String
+  createdAt   DateTime         @default(now())
+}

@@ -26,6 +26,8 @@ import parentsRouter from './routes/parents';
 import onboardingRouter from './routes/onboarding';
 import emergencyRouter from './routes/emergency';
 import settingsRouter from './routes/settings';
+import notificationsRouter from './routes/notifications';
+import { startNotificationScheduler } from './services/notificationScheduler';
 import { sendPushToAll } from './services/pushNotifications';
 import { eventBus } from './events/eventBus';
 
@@ -74,6 +76,7 @@ app.use('/api/parents', parentsRouter);
 app.use('/api/onboarding', onboardingRouter);
 app.use('/api/emergency', emergencyRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/notifications', notificationsRouter);
 
 // 404 handler
 app.use((_req, res) => {
@@ -113,6 +116,7 @@ httpServer.listen(env.PORT, () => {
   console.log(`   CORS origin: ${env.CORS_ORIGIN}\n`);
 
   startHeartbeatWatcher();
+  startNotificationScheduler();
 
   // Auto-start demo simulator in development
   if (env.NODE_ENV === 'development') {

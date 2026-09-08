@@ -89,7 +89,7 @@ export async function pushToSchool(schoolId: string, title: string, body: string
 
 export async function pushToClass(classId: string, title: string, body: string, data?: Record<string, unknown>): Promise<void> {
   const enrollments = await prisma.classEnrollment.findMany({
-    where: { classId, isActive: true },
+    where: { classId },
     select: { studentId: true },
   });
 

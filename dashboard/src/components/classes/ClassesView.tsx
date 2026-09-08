@@ -76,7 +76,7 @@ export function ClassesView() {
                         ? 'bg-compliance-red/10 text-compliance-red'
                         : 'bg-compliance-green/10 text-compliance-green',
                     )}>
-                      {cls.isLocked ? '🔒 Locked' : '● Active'}
+                      {cls.isLocked ? '🔒 locked' : '🔓 unlocked'}
                     </div>
                   )}
                 </div>

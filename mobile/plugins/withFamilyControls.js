@@ -1,11 +1,15 @@
-const { withEntitlementsPlist } = require('@expo/config-plugins');
+const { withEntitlementsPlist, withXcodeProject } = require('@expo/config-plugins');
 
-// Adds com.apple.developer.family-controls entitlement
-// Required for FamilyControls / ManagedSettings (Screen Time API)
-// Apple approval needed: https://developer.apple.com/contact/request/family-controls-distribution/
+// Adds FamilyControls entitlement + App Group to the main app target.
+// The App Group lets ScreenTimeModule share lock state with the
+// ROOZMonitor DeviceActivity extension (separate Xcode target).
 module.exports = function withFamilyControls(config) {
-  return withEntitlementsPlist(config, (mod) => {
+  // Step 1: add entitlements to the main app
+  config = withEntitlementsPlist(config, (mod) => {
     mod.modResults['com.apple.developer.family-controls'] = true;
+    mod.modResults['com.apple.security.application-groups'] = ['group.com.rooz.app'];
     return mod;
   });
+
+  return config;
 };

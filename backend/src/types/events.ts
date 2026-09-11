@@ -69,6 +69,10 @@ export interface ServerToClientEvents {
   'student:violation': (data: { studentId: string; description: string; level: string; app?: string }) => void;
   'emergency:unlock': (data: { schoolId: string; timestamp: string }) => void;
   'announcement': (data: { schoolId: string; title: string; body: string; timestamp: string }) => void;
+  'homework:dropped': (data: { assignment: HomeworkDropEvent }) => void;
+  'homework:updated': (data: { assignment: HomeworkDropEvent }) => void;
+  'homework:deleted': (data: { assignmentId: string }) => void;
+  'attendance:updated': (data: AttendanceEvent) => void;
 }
 
 export interface ClientToServerEvents {
@@ -140,4 +144,23 @@ export interface StudentStatusEvent {
   status: ComplianceStatus;
   lastSeen: string;
   timestamp: string;
+}
+
+export interface HomeworkDropEvent {
+  id: string;
+  title: string;
+  description?: string | null;
+  type: string;
+  dueDate?: string | null;
+  points?: number | null;
+  className: string;
+  droppedAt: string;
+}
+
+export interface AttendanceEvent {
+  classId: string;
+  studentId: string;
+  studentName: string;
+  status: 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED';
+  markedAt: string;
 }

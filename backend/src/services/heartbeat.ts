@@ -33,19 +33,28 @@ export async function processHeartbeat(
 
   let isInsideGeofence = true;
   let distance: number | null = null;
+  let duringSchoolHours = false;
 
-  if (meta.lat != null && meta.lng != null) {
-    const school = await prisma.school.findUnique({
-      where: { id: student.user.schoolId },
-      select: { lat: true, lng: true, geofenceRadius: true },
-    });
-    if (school?.lat != null && school?.lng != null) {
+  const school = await prisma.school.findUnique({
+    where: { id: student.user.schoolId },
+    select: { lat: true, lng: true, geofenceRadius: true, schoolHoursStart: true, schoolHoursEnd: true, timezone: true },
+  });
+
+  if (school) {
+    // Check school hours — only enforce geofence during school hours
+    const tz = school.timezone ?? 'America/New_York';
+    const nowLocal = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const hhmm = `${String(nowLocal.getHours()).padStart(2, '0')}:${String(nowLocal.getMinutes()).padStart(2, '0')}`;
+    duringSchoolHours = hhmm >= (school.schoolHoursStart ?? '08:00') && hhmm <= (school.schoolHoursEnd ?? '15:00');
+
+    if (meta.lat != null && meta.lng != null && school.lat != null && school.lng != null && duringSchoolHours) {
       distance = distanceMeters(meta.lat, meta.lng, school.lat, school.lng);
-      isInsideGeofence = distance <= school.geofenceRadius;
+      isInsideGeofence = distance <= (school.geofenceRadius ?? 200);
     }
   }
 
-  const newStatus = isInsideGeofence ? 'COMPLIANT' : 'NON_COMPLIANT';
+  // Outside school hours — geofence doesn't apply, always compliant
+  const newStatus = (!duringSchoolHours || isInsideGeofence) ? 'COMPLIANT' : 'NON_COMPLIANT';
   const wasInsideGeofence = student.status !== 'NON_COMPLIANT';
 
   await Promise.all([
@@ -70,8 +79,8 @@ export async function processHeartbeat(
     }),
   ]);
 
-  // Only fire a violation + alert on the transition into off-campus, not every heartbeat
-  if (!isInsideGeofence && wasInsideGeofence) {
+  // Only fire a violation + alert on the transition into off-campus (during school hours)
+  if (duringSchoolHours && !isInsideGeofence && wasInsideGeofence) {
     await prisma.violation.create({
       data: {
         studentId,

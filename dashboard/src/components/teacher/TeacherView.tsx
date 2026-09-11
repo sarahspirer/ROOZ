@@ -93,13 +93,25 @@ export function TeacherView() {
   const { classStatuses, openStudent } = usePhocusStore();
   useSocket();
 
-  const [tab, setTab] = useState<'class' | 'notifications'>('class');
+  const [tab, setTab] = useState<'class' | 'notifications' | 'homework'>('class');
   const [classes, setClasses] = useState<ClassDetail[]>([]);
   const [selectedClass, setSelectedClass] = useState<ClassDetail | null>(null);
   const [locking, setLocking] = useState(false);
   const [loading, setLoading] = useState(true);
   const [allowAppInput, setAllowAppInput] = useState('');
   const [showAppModal, setShowAppModal] = useState(false);
+
+  // Homework Drop
+  const [showHwModal, setShowHwModal] = useState(false);
+  const [hwType, setHwType] = useState<'HOMEWORK' | 'PROJECT' | 'READING' | 'STUDY_GUIDE' | 'QUIZ' | 'TEST' | 'OTHER'>('HOMEWORK');
+  const [hwTitle, setHwTitle] = useState('');
+  const [hwDesc, setHwDesc] = useState('');
+  const [hwDueDate, setHwDueDate] = useState('');
+  const [hwDueTime, setHwDueTime] = useState('23:59');
+  const [hwPoints, setHwPoints] = useState('');
+  const [hwDropping, setHwDropping] = useState(false);
+  const [hwFlash, setHwFlash] = useState<'idle' | 'dropped' | 'error'>('idle');
+  const [classAssignments, setClassAssignments] = useState<any[]>([]);
 
   // Notifications
   const [showNotifModal, setShowNotifModal] = useState(false);
@@ -166,6 +178,11 @@ export function TeacherView() {
   useEffect(() => {
     if (selectedClass && classStatuses[selectedClass.id]) loadClasses();
   }, [classStatuses]);
+
+  useEffect(() => {
+    if (selectedClass && tab === 'homework') loadAssignments(selectedClass.id);
+    if (selectedClass && tab === 'class') loadAttendance(selectedClass.id);
+  }, [tab, selectedClass?.id]);
 
   const handleLock = async () => {
     if (!selectedClass) return;
@@ -236,6 +253,89 @@ export function TeacherView() {
     } catch { /* ignore */ }
   };
 
+  // Attendance
+  const [attendanceMap, setAttendanceMap] = useState<Record<string, { status: string; attendanceId: string | null }>>({});
+  const [attendanceDate] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [markingAttendance, setMarkingAttendance] = useState<string | null>(null);
+
+  const loadAttendance = useCallback(async (classId: string) => {
+    try {
+      const token = localStorage.getItem('rooz_token');
+      const res = await fetch(`${API_URL}/api/attendance/class/${classId}?date=${attendanceDate}`, {
+        headers: { Authorization: `Bearer ${token ?? ''}` },
+      });
+      const data = await res.json();
+      const map: Record<string, { status: string; attendanceId: string | null }> = {};
+      for (const s of (data.students ?? [])) {
+        map[s.studentId] = { status: s.status ?? 'UNMARKED', attendanceId: s.attendanceId };
+      }
+      setAttendanceMap(map);
+    } catch { /* ignore */ }
+  }, [attendanceDate]);
+
+  const markAttendance = async (classId: string, studentId: string, status: string) => {
+    setMarkingAttendance(studentId);
+    try {
+      const token = localStorage.getItem('rooz_token');
+      const res = await fetch(`${API_URL}/api/attendance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token ?? ''}` },
+        body: JSON.stringify({ classId, studentId, status, markedBy: 'teacher', date: attendanceDate }),
+      });
+      if (res.ok) await loadAttendance(classId);
+    } catch { /* ignore */ }
+    finally { setMarkingAttendance(null); }
+  };
+
+  const loadAssignments = useCallback(async (classId: string) => {
+    try {
+      const token = localStorage.getItem('rooz_token');
+      const res = await fetch(`${API_URL}/api/assignments/class/${classId}`, { headers: { Authorization: `Bearer ${token ?? ''}` } });
+      const data = await res.json();
+      setClassAssignments(data.assignments ?? []);
+    } catch { /* ignore */ }
+  }, []);
+
+  const openHwModal = () => {
+    setHwTitle(''); setHwDesc(''); setHwType('HOMEWORK');
+    setHwDueDate(''); setHwDueTime('23:59'); setHwPoints('');
+    setHwFlash('idle'); setShowHwModal(true);
+  };
+
+  const dropHomework = async () => {
+    if (!hwTitle.trim() || !selectedClass) return;
+    setHwDropping(true);
+    try {
+      const token = localStorage.getItem('rooz_token');
+      const payload: any = {
+        classId: selectedClass.id,
+        title: hwTitle.trim(),
+        description: hwDesc.trim() || undefined,
+        type: hwType,
+        points: hwPoints ? parseInt(hwPoints) : undefined,
+        dueDate: hwDueDate ? new Date(`${hwDueDate}T${hwDueTime}:00`).toISOString() : undefined,
+      };
+      const res = await fetch(`${API_URL}/api/assignments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token ?? ''}` },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      setHwFlash('dropped');
+      await loadAssignments(selectedClass.id);
+      setTimeout(() => { setHwFlash('idle'); setShowHwModal(false); }, 1800);
+    } catch { setHwFlash('error'); setTimeout(() => setHwFlash('idle'), 3000); }
+    finally { setHwDropping(false); }
+  };
+
+  const deleteAssignment = async (id: string) => {
+    try {
+      const token = localStorage.getItem('rooz_token');
+      await fetch(`${API_URL}/api/assignments/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token ?? ''}` } });
+      if (selectedClass) await loadAssignments(selectedClass.id);
+    } catch { /* ignore */ }
+  };
+
   const handleAllowApp = async () => {
     if (!selectedClass || !allowAppInput.trim()) return;
     const newApps = [...selectedClass.allowedApps, allowAppInput.trim()];
@@ -285,13 +385,17 @@ export function TeacherView() {
 
           {/* Tab bar */}
           <div className="flex gap-1 bg-surface rounded-xl p-1 w-fit">
-            {(['class', 'notifications'] as const).map((t) => (
+            {([
+              { id: 'class', label: '🏫 class' },
+              { id: 'homework', label: '📚 homework' + (classAssignments.filter((a) => !a.completionRate || a.completionRate < 100).length > 0 ? ` · ${classAssignments.filter((a) => !a.completionRate || a.completionRate < 100).length}` : '') },
+              { id: 'notifications', label: '📬 notify' + (upcoming.length > 0 ? ` · ${upcoming.length}` : '') },
+            ] as const).map((t) => (
               <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={clsx('px-4 py-1.5 rounded-lg text-sm font-semibold transition-all', tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-surface-muted hover:text-gray-900')}
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={clsx('px-4 py-1.5 rounded-lg text-sm font-semibold transition-all', tab === t.id ? 'bg-white text-gray-900 shadow-sm' : 'text-surface-muted hover:text-gray-900')}
               >
-                {t === 'class' ? '🏫 class' : '📬 notifications' + (upcoming.length > 0 ? ` · ${upcoming.length}` : '')}
+                {t.label}
               </button>
             ))}
           </div>
@@ -336,33 +440,136 @@ export function TeacherView() {
                 <div className="px-4 py-3 border-b border-surface-border flex items-center justify-between">
                   <h3 className="section-label">students ({cls.students.length})</h3>
                   <div className="flex items-center gap-4 text-xs text-surface-muted">
-                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-compliance-green inline-block" />{cls.students.filter((s) => s.status === 'COMPLIANT').length} compliant</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-compliance-red inline-block" />{cls.students.filter((s) => s.status !== 'COMPLIANT').length} not</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-compliance-green inline-block" />{cls.students.filter((s) => s.status === 'COMPLIANT').length} on track</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-compliance-red inline-block" />{cls.students.filter((s) => s.status !== 'COMPLIANT').length} off</span>
                   </div>
                 </div>
-                <div className="divide-y divide-surface-border max-h-[400px] overflow-y-auto">
+                <div className="divide-y divide-surface-border max-h-[460px] overflow-y-auto">
                   {cls.students.length === 0 ? (
                     <div className="px-4 py-8 text-center text-surface-muted text-sm">no students enrolled</div>
                   ) : (
                     cls.students
                       .sort((a, b) => { const o = { BYPASSING: 0, NON_COMPLIANT: 1, OFFLINE: 2, COMPLIANT: 3 }; return (o[a.status] ?? 4) - (o[b.status] ?? 4); })
-                      .map((student) => (
-                        <div key={student.id} onClick={() => openStudent(student.id)} className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-surface-border/30 transition-colors">
-                          <div className={clsx('w-2.5 h-2.5 rounded-full shrink-0', STATUS_DOT[student.status])} />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-900 truncate">{student.name}</div>
-                            <div className="text-xs text-surface-muted">{STATUS_LABEL[student.status]}</div>
+                      .map((student) => {
+                        const att = attendanceMap[student.id];
+                        const attStatus = att?.status ?? 'UNMARKED';
+                        const isMarking = markingAttendance === student.id;
+                        const attConfig: Record<string, { label: string; color: string; bg: string }> = {
+                          PRESENT:  { label: '✓ here',  color: '#34C759', bg: '#34C75918' },
+                          LATE:     { label: '⏱ late',  color: '#FF9500', bg: '#FF950018' },
+                          ABSENT:   { label: '✗ absent', color: '#C8102E', bg: '#C8102E18' },
+                          EXCUSED:  { label: '~ excused', color: '#8E8E93', bg: '#8E8E9318' },
+                          UNMARKED: { label: 'mark',    color: '#8E8E93', bg: '#F2F2F7' },
+                        };
+                        const cfg = attConfig[attStatus];
+                        return (
+                          <div key={student.id} className="flex items-center gap-3 px-4 py-3 hover:bg-surface-border/20 transition-colors">
+                            <div className={clsx('w-2.5 h-2.5 rounded-full shrink-0', STATUS_DOT[student.status])} />
+                            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openStudent(student.id)}>
+                              <div className="text-sm font-medium text-gray-900 truncate">{student.name}</div>
+                              <div className="text-xs text-surface-muted">{STATUS_LABEL[student.status]}</div>
+                            </div>
+                            {/* Attendance quick-mark */}
+                            <div className="flex gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                              {attStatus !== 'UNMARKED' ? (
+                                <span className="text-xs font-bold px-2.5 py-1 rounded-lg cursor-default" style={{ color: cfg.color, background: cfg.bg }}>{cfg.label}</span>
+                              ) : null}
+                              {(['PRESENT', 'LATE', 'ABSENT'] as const).map((s) => (
+                                <button
+                                  key={s}
+                                  disabled={isMarking}
+                                  onClick={() => markAttendance(cls.id, student.id, s)}
+                                  title={s.toLowerCase()}
+                                  className={clsx(
+                                    'w-7 h-7 rounded-lg text-sm flex items-center justify-center transition-all',
+                                    attStatus === s ? 'opacity-0 pointer-events-none' : 'opacity-40 hover:opacity-100',
+                                  )}
+                                  style={{ background: s === 'PRESENT' ? '#34C75918' : s === 'LATE' ? '#FF950018' : '#C8102E18' }}
+                                >
+                                  {s === 'PRESENT' ? '✓' : s === 'LATE' ? '⏱' : '✗'}
+                                </button>
+                              ))}
+                            </div>
+                            <div className="text-right shrink-0">
+                              <div className="text-sm font-bold text-gray-900 tabular-nums">{student.focusScore}</div>
+                              <div className="text-xs text-surface-muted">pts</div>
+                            </div>
+                            {student.violations > 0 && <div className="text-xs font-bold text-compliance-red bg-compliance-red/10 rounded px-2 py-0.5 shrink-0">{student.violations}×</div>}
                           </div>
-                          <div className="text-right shrink-0">
-                            <div className="text-sm font-bold text-gray-900 tabular-nums">{student.focusScore}</div>
-                            <div className="text-xs text-surface-muted">pts</div>
-                          </div>
-                          {student.violations > 0 && <div className="text-xs font-bold text-compliance-red bg-compliance-red/10 rounded px-2 py-0.5 shrink-0">{student.violations}×</div>}
-                        </div>
-                      ))
+                        );
+                      })
                   )}
                 </div>
+                {/* Attendance summary footer */}
+                {cls.students.length > 0 && (
+                  <div className="px-4 py-2.5 border-t border-surface-border flex gap-5 text-xs text-surface-muted bg-surface/50">
+                    {(['PRESENT', 'LATE', 'ABSENT', 'EXCUSED'] as const).map((s) => {
+                      const count = Object.values(attendanceMap).filter((a) => a.status === s).length;
+                      const colors: Record<string, string> = { PRESENT: '#34C759', LATE: '#FF9500', ABSENT: '#C8102E', EXCUSED: '#8E8E93' };
+                      return count > 0 ? (
+                        <span key={s} className="font-semibold" style={{ color: colors[s] }}>
+                          {s === 'PRESENT' ? '✓' : s === 'LATE' ? '⏱' : s === 'ABSENT' ? '✗' : '~'} {count} {s.toLowerCase()}
+                        </span>
+                      ) : null;
+                    })}
+                    <span className="ml-auto">{new Date(attendanceDate).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                  </div>
+                )}
               </div>
+            </>
+          )}
+
+          {/* ── HOMEWORK TAB ── */}
+          {tab === 'homework' && (
+            <>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">homework</h1>
+                  <p className="text-sm text-surface-muted mt-0.5">drops appear instantly on student phones</p>
+                </div>
+                <button
+                  onClick={openHwModal}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
+                  style={{ background: '#C8102E' }}
+                >
+                  📚 drop homework
+                </button>
+              </div>
+
+              {classAssignments.length === 0 ? (
+                <div className="card py-16 text-center">
+                  <div className="text-5xl mb-4">📭</div>
+                  <div className="font-bold text-gray-900 text-lg">nothing dropped yet</div>
+                  <div className="text-surface-muted text-sm mt-2">drop homework while students are still in their seats</div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {classAssignments.map((a) => {
+                    const typeColors: Record<string, string> = { HOMEWORK: '#007AFF', PROJECT: '#8B5CF6', READING: '#34C759', STUDY_GUIDE: '#FF9500', QUIZ: '#EC4899', TEST: '#C8102E', OTHER: '#8E8E93' };
+                    const color = typeColors[a.type] ?? '#8E8E93';
+                    const due = a.dueDate ? new Date(a.dueDate) : null;
+                    return (
+                      <div key={a.id} className="card flex items-center gap-4">
+                        <div className="w-1 self-stretch rounded-full shrink-0" style={{ background: color }} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-bold uppercase tracking-wide" style={{ color }}>{a.type.toLowerCase()}</span>
+                            {due && <span className="text-xs text-surface-muted">· due {due.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</span>}
+                            {a.points && <span className="text-xs text-surface-muted">· {a.points} pts</span>}
+                          </div>
+                          <div className="font-semibold text-gray-900">{a.title}</div>
+                          {a.description && <div className="text-sm text-surface-muted mt-1 truncate">{a.description}</div>}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="text-2xl font-black tabular-nums" style={{ color: a.completionRate >= 80 ? '#34C759' : a.completionRate >= 50 ? '#FF9500' : '#C8102E' }}>{a.completionRate ?? 0}%</div>
+                          <div className="text-xs text-surface-muted">{a.completionCount ?? 0}/{a.totalStudents} done</div>
+                        </div>
+                        <button onClick={() => deleteAssignment(a.id)} className="text-xs text-surface-muted hover:text-compliance-red transition-colors px-2 py-1 rounded shrink-0">×</button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </>
           )}
 
@@ -655,6 +862,109 @@ export function TeacherView() {
                   style={{ background: '#C8102E' }}
                 >
                   {notifSending ? 'sending…' : sendMode === 'now' ? '🚀 send now' : `📅 schedule`}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── HOMEWORK DROP MODAL ── */}
+      {showHwModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+            <div className="px-6 pt-6 pb-4 border-b border-surface-border flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-xl">📚</div>
+              <div>
+                <h2 className="font-bold text-gray-900 text-lg">drop homework</h2>
+                <p className="text-xs text-surface-muted">appears instantly on every student's phone</p>
+              </div>
+            </div>
+
+            <div className="px-6 py-5 space-y-5">
+              {/* Type */}
+              <div>
+                <div className="section-label mb-2">type</div>
+                <div className="flex gap-2 flex-wrap">
+                  {([
+                    { id: 'HOMEWORK', icon: '📚' }, { id: 'TEST', icon: '📝' },
+                    { id: 'QUIZ', icon: '✏️' }, { id: 'PROJECT', icon: '🗂' },
+                    { id: 'READING', icon: '📖' }, { id: 'STUDY_GUIDE', icon: '📋' },
+                  ] as const).map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setHwType(t.id)}
+                      className={clsx('flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all')}
+                      style={hwType === t.id ? { background: '#C8102E', color: '#fff', borderColor: '#C8102E' } : { background: '#F2F2F7', color: '#8E8E93', borderColor: 'transparent' }}
+                    >
+                      {t.icon} {t.id.toLowerCase().replace('_', ' ')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Title */}
+              <div>
+                <div className="section-label mb-1.5">title</div>
+                <input
+                  value={hwTitle}
+                  onChange={(e) => setHwTitle(e.target.value)}
+                  placeholder={hwType === 'TEST' ? 'e.g. Chapter 5 test' : hwType === 'READING' ? 'e.g. Read pages 42–60' : 'e.g. Math worksheet p. 24'}
+                  className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-gray-900 text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500"
+                  autoFocus
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <div className="section-label mb-1.5">details <span className="normal-case font-normal text-surface-muted">(optional)</span></div>
+                <textarea
+                  value={hwDesc}
+                  onChange={(e) => setHwDesc(e.target.value)}
+                  placeholder="any extra instructions…"
+                  rows={2}
+                  className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-gray-900 text-sm placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none"
+                />
+              </div>
+
+              {/* Due + Points */}
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <div className="section-label mb-1.5">due date</div>
+                  <input
+                    type="date"
+                    value={hwDueDate}
+                    onChange={(e) => setHwDueDate(e.target.value)}
+                    min={new Date().toISOString().slice(0, 10)}
+                    className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-brand-500"
+                  />
+                </div>
+                <div className="w-28">
+                  <div className="section-label mb-1.5">points</div>
+                  <input
+                    type="number"
+                    value={hwPoints}
+                    onChange={(e) => setHwPoints(e.target.value)}
+                    placeholder="e.g. 100"
+                    min="0"
+                    className="w-full bg-surface border border-surface-border rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-brand-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 pb-6">
+              {hwFlash === 'dropped' && <p className="text-compliance-green text-xs font-semibold mb-3">✓ dropped to {selectedClass?.name}</p>}
+              {hwFlash === 'error' && <p className="text-compliance-red text-xs font-semibold mb-3">something went wrong — try again</p>}
+              <div className="flex gap-3">
+                <button onClick={() => setShowHwModal(false)} className="px-5 py-2.5 rounded-xl bg-surface text-gray-700 text-sm font-medium hover:bg-surface-border">cancel</button>
+                <button
+                  onClick={dropHomework}
+                  disabled={hwDropping || !hwTitle.trim()}
+                  className="flex-1 py-2.5 rounded-xl text-white text-sm font-bold transition-all disabled:opacity-40 hover:opacity-90"
+                  style={{ background: '#C8102E' }}
+                >
+                  {hwDropping ? 'dropping…' : `📲 drop to ${selectedClass?.name}`}
                 </button>
               </div>
             </div>

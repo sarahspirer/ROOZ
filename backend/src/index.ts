@@ -27,6 +27,8 @@ import onboardingRouter from './routes/onboarding';
 import emergencyRouter from './routes/emergency';
 import settingsRouter from './routes/settings';
 import notificationsRouter from './routes/notifications';
+import assignmentsRouter from './routes/assignments';
+import attendanceRouter from './routes/attendance';
 import { startNotificationScheduler } from './services/notificationScheduler';
 import { sendPushToAll } from './services/pushNotifications';
 import { eventBus } from './events/eventBus';
@@ -77,6 +79,8 @@ app.use('/api/onboarding', onboardingRouter);
 app.use('/api/emergency', emergencyRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/notifications', notificationsRouter);
+app.use('/api/assignments', assignmentsRouter);
+app.use('/api/attendance', attendanceRouter);
 
 // 404 handler
 app.use((_req, res) => {

@@ -97,12 +97,14 @@ model Student {
   status          ComplianceStatus @default(COMPLIANT)
   lastSeen        DateTime         @default(now())
 
-  devices          Device[]
-  violations       Violation[]
-  events           ComplianceEvent[]
-  rewards          StudentReward[]
-  classEnrollments ClassEnrollment[]
-  parents          ParentStudent[]
+  devices               Device[]
+  violations            Violation[]
+  events                ComplianceEvent[]
+  rewards               StudentReward[]
+  classEnrollments      ClassEnrollment[]
+  parents               ParentStudent[]
+  assignmentCompletions AssignmentCompletion[]
+  attendance            Attendance[]
 }
 
 model Teacher {
@@ -165,6 +167,8 @@ model Class {
 
   sessions    Session[]
   enrollments ClassEnrollment[]
+  assignments Assignment[]
+  attendance  Attendance[]
 }
 
 model ClassEnrollment {
@@ -248,6 +252,67 @@ model StudentReward {
   reviewedBy String?
   reviewedAt DateTime?
   note       String?
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  classId   String
+  studentId String
+  class     Class            @relation(fields: [classId], references: [id])
+  student   Student          @relation(fields: [studentId], references: [id])
+  status    AttendanceStatus @default(PRESENT)
+  note      String?
+  date      DateTime         // date only, noon UTC
+  markedAt  DateTime         @default(now())
+  markedBy  String
+
+  @@unique([classId, studentId, date])
+  @@index([classId, date])
+}
+
+enum AssignmentType {
+  HOMEWORK
+  PROJECT
+  READING
+  STUDY_GUIDE
+  QUIZ
+  TEST
+  OTHER
+}
+
+model Assignment {
+  id          String         @id @default(cuid())
+  classId     String
+  class       Class          @relation(fields: [classId], references: [id])
+  createdBy   String
+  title       String
+  description String?
+  type        AssignmentType @default(HOMEWORK)
+  dueDate     DateTime?
+  points      Int?
+  attachmentUrl String?
+  droppedAt   DateTime       @default(now())
+
+  completions AssignmentCompletion[]
+
+  @@index([classId, droppedAt])
+}
+
+model AssignmentCompletion {
+  assignmentId String
+  studentId    String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id])
+  completedAt  DateTime   @default(now())
+
+  @@id([assignmentId, studentId])
 }
 
 enum NotificationType {

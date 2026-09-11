@@ -551,6 +551,11 @@ function StudentApp({ user, student, token }: { user: any; student: StudentData;
     <SafeAreaView style={s.root}>
       <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
 
+      {/* ROOZ wordmark */}
+      <View style={s.appHeader}>
+        <Text style={s.appWordmark}>ROOZ</Text>
+      </View>
+
       {/* Content */}
       <View style={{ flex: 1 }}>
         {tab === 'focus' && (
@@ -627,6 +632,8 @@ export default function Root() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: WHITE },
+  appHeader: { paddingHorizontal: 24, paddingTop: 4, paddingBottom: 8, backgroundColor: WHITE },
+  appWordmark: { fontSize: 22, fontWeight: '900', color: RED, letterSpacing: 2 },
   center: { justifyContent: 'center', alignItems: 'center' },
 
   // Login

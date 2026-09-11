@@ -22,12 +22,11 @@
       "infoPlist": {
         "UIBackgroundModes": [
           "fetch",
-          "remote-notification",
-          "fetch",
           "remote-notification"
         ],
         "ITSAppUsesNonExemptEncryption": false,
-        "NSLocationWhenInUseUsageDescription": "ROOZ checks that you're on school grounds during class to track focus compliance."
+        "NSLocationWhenInUseUsageDescription": "ROOZ checks that you're on school grounds during class to track focus compliance.",
+        "NSFamilyControlsUsageDescription": "ROOZ uses Screen Time to keep students focused during school hours."
       }
     },
     "android": {

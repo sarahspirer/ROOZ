@@ -91,7 +91,7 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
       name,
       role,
       schoolId,
-      // Store hash via extension — scaffold note
+      passwordHash,
       student:
         role === 'STUDENT'
           ? { create: { grade: grade ?? 'Unknown' } }

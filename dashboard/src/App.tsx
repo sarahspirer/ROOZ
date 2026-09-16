@@ -62,6 +62,7 @@ function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@myrooz.com"
               className="w-full bg-surface border border-surface-border rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-brand-500 transition-colors"
               required
             />

@@ -119,7 +119,7 @@ export function StudentsView() {
             <textarea
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
-              placeholder={"Emma Johnson, emma@student.rooz.school, 10\nJake Smith, jake@student.rooz.school, 11, mypassword"}
+              placeholder={"Emma Johnson, emma@myrooz.com, 10\nJake Smith, jake@myrooz.com, 11, mypassword"}
               rows={8}
               className="w-full bg-surface border border-surface-border rounded-lg px-3 py-2.5 text-gray-900 text-xs font-mono placeholder-surface-muted focus:outline-none focus:border-brand-500 resize-none mb-4"
             />

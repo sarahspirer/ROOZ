@@ -69,16 +69,14 @@ export function ClassesView() {
                     <h3 className="font-semibold text-gray-900">{cls.name}</h3>
                     {cls.room && <div className="text-xs text-surface-muted">Room {cls.room}</div>}
                   </div>
-                  {cls.hasActiveSession && (
-                    <div className={clsx(
-                      'text-xs font-bold px-2 py-1 rounded',
-                      cls.isLocked
-                        ? 'bg-compliance-red/10 text-compliance-red'
-                        : 'bg-compliance-green/10 text-compliance-green',
-                    )}>
-                      {cls.isLocked ? '🔒 locked' : '🔓 unlocked'}
-                    </div>
-                  )}
+                  <div className={clsx(
+                    'text-xs font-bold px-2 py-1 rounded',
+                    cls.isLocked
+                      ? 'bg-compliance-red/10 text-compliance-red'
+                      : 'bg-compliance-green/10 text-compliance-green',
+                  )}>
+                    {cls.isLocked ? '🔒 locked' : '🔓 unlocked'}
+                  </div>
                 </div>
                 <div className="mt-3 space-y-1">
                   {cls.teacherName && (

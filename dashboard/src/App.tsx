@@ -22,8 +22,8 @@ import { SettingsView } from './components/settings/SettingsView';
 
 function LoginPage() {
   const setAuth = usePhocusStore((s) => s.setAuth);
-  const [email, setEmail] = React.useState('admin@phocus.school');
-  const [password, setPassword] = React.useState('password');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
 
@@ -52,7 +52,7 @@ function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <RoozLogo size="lg" />
-          <p className="text-surface-muted mt-2 text-sm">School Phone Management</p>
+          <p className="text-surface-muted mt-2 text-sm">student performance platform</p>
         </div>
 
         <form onSubmit={handleLogin} className="bg-white rounded-2xl p-8 space-y-4 shadow-sm border border-surface-border">
